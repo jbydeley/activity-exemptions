@@ -1,6 +1,6 @@
 # activity-exemptions
 
-> A Vue.js project
+Display a list of users that can be exempted / unexempted for a specific activity
 
 ## Build Setup
 
