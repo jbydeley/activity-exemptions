@@ -2,13 +2,61 @@ import axios from 'axios'
 
 import * as types from './mutation-types'
 
+var token = D2L.LP.Web.Authentication.Xsrf.GetXsrfToken();
+
+const d2lAxios = axios.create({
+	withCredentials: true,
+	headers: {
+		'Access-Control-Allow-Origin': '*',
+		'Content-Type': 'application/json',
+		'X-CSRF-Token': token
+	}
+})
+
 export const actions = {
-	setExempt({commit}) {
-		commit(types.SET_EXEMPT, {isExempt: true})
+	setExempt({commit, state}) {
+		const selectedUsers = state.users.filter( u => u.isSelected && !state.exemptions.find( e => e.UserId == u.Identifier ) )
+		var shouldFail = false;
+
+		var count = selectedUsers.length
+
+		axios.all(selectedUsers.map( user => {
+			let url = `${state.exemptionUpdateURL}&userId=${user.Identifier}`
+
+			if ( !shouldFail ) {
+				shouldFail = true
+				url = '/404'
+			}
+
+			d2lAxios.post(url)
+				.then( resp => {
+					count--
+					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true}) 
+				})
+				.catch( e => console.log(`Inner: ${e}`) )
+		}))
+		.then(axios.spread( () => {
+			D2L.LP.Web.UI.Rpc.Connect(
+				'GET',
+				new D2L.LP.Web.Http.UrlLocation.Create(
+					'/d2l/le/manageexemptions/6609/UserExempted'
+				)
+			)
+		}))
+
+		if( count === 0 ) {
+			console.log('Success')
+		}
 	},
 
-	setUnexempt({commit}) {
-		commit(types.SET_EXEMPT, {isExempt: false})
+	setUnexempt({commit, state}) {
+		const selectedUsers = state.users.filter( u => u.isSelected && state.exemptions.find( e => e.UserId == u.Identifier ) )
+
+		selectedUsers.forEach( user => {
+			d2lAxios.delete(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
+				.then( resp => commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false}) )
+				.catch( e => console.log(e) )
+		})
 	},
 
 	toggleSelection({commit}, user) {
@@ -20,11 +68,14 @@ export const actions = {
 		state.users.forEach( u => commit(types.SET_USER_SELECTION, {Identifier: u.Identifier, isSelect} ))
 	},
 
-	loadUsers({commit}) {
-		axios.get('/d2l/api/le/1.26/6613/classlist')
+	loadUsers({commit}, {classlistURL, exemptionsURL, exemptionUpdateURL}) {
+		commit(types.SET_CLASSLIST_URL, classlistURL)
+		commit(types.SET_EXEMPTIONS_URL, exemptionsURL)
+		commit(types.SET_EXEMPTION_UPDATE_URL, exemptionUpdateURL)
+
+		axios.get(classlistURL)
 			.then( resp => {
 				commit( types.LOAD_USERS, resp.data.Items.map( r => {
-					r.isExempt = false
 					r.isSelected = false
 					return r
 				}))
@@ -33,15 +84,28 @@ export const actions = {
 			})
 			.catch( e => {
 				console.log(e)
-				this.errors.push(e)
 			})
 
-		axios.get('/d2l/api/le/1.26/6613/activities/exemptions/?activityId=https://ids.brightspace.com/activities/lti/Dev-2')
+		axios.get(exemptionsURL)
 			.then( resp => {
 				commit( types.LOAD_EXEMPTIONS, resp.data )
 			})
 			.catch( e => {
-				this.errors.push(e)
+				console.log(e)
+			})
+	},
+
+	loadMore({commit, state}) {
+		axios.get(`${state.classlistURL}?bookmark=${state.bookmark}`)
+			.then( resp => {
+				commit( types.LOAD_MORE_USERS, resp.data.Items.map( r => {
+					r.isSelected = false
+					return r
+				}) )
+				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
+			})
+			.catch( e => {
+				console.log(e)
 			})
 	}
 }

@@ -10,7 +10,7 @@
       <thead>
         <tr>
           <th>
-            <input type="checkbox" class="d2l-checkbox" :checked="allSelected" @input="selectAll">
+            <input type="checkbox" class="d2l-checkbox" :checked="allSelected" @change="selectAll">
           </th>
           <th>{{ $t('lblLastFirstName') }}</th>
           <th>{{ $t('lblExemptStatus') }}</th>
@@ -19,13 +19,14 @@
       <tbody>
         <tr v-for="user in allUsers">
           <td>
-            <input type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @input="toggleSelection(user)">
+            <input type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
           </td>
           <td>{{user.fullName}}</td>
           <td><span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span></td>
         </tr>
       </tbody>
     </table>
+    <button class="d2l-button" v-if="hasMoreItems" @click="loadMore">{{ $t('btnLoadMore') }}</button>
     <button class="d2l-button primary" @click="setExempt">{{ $t('btnExempt') }}</button>
     <button class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
   </div>
@@ -47,13 +48,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['allUsers', 'isUserExempt', 'exemptionCount', 'allSelected'])
+    ...mapGetters(['allUsers', 'isUserExempt', 'exemptionCount', 'allSelected', 'hasMoreItems'])
   },
   methods: {
-    ...mapActions(['toggleSelection', 'setExempt', 'setUnexempt', 'selectAll'])
-  },
-  created() {
-    this.$store.dispatch('loadUsers')
+    ...mapActions(['toggleSelection', 'setExempt', 'setUnexempt', 'selectAll', 'loadMore'])
   }
 }
 </script>
@@ -63,6 +61,7 @@ export default {
 #activity-exemptions {
   color: #565a5c;
   font-family: 'Lato', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+  padding-bottom: 50px;
 }
 
 table {

@@ -48,11 +48,12 @@ module.exports = {
     historyApiFallback: true,
     proxy: {
       '/d2l': {
-        target: 'http://localhost:8080/',
+        target: 'http://localhost:8082/',
         changeOrigin: true,
         pathRewrite: {
           '^/d2l/api/le/1.26/6613/classlist': '/testData/classlist.json',
-          '^/d2l/api/le/1.26/6613/activities/exemptions/': '/testData/exemptions.json'
+          '^/d2l/api/le/1.26/6613/activities/exemptions/': '/testData/exemptions.json',
+          '^/d2l/api/le/1.26/6613/activities/exemptions*': '/testData/exemptions.json'
         }
       }
     },
