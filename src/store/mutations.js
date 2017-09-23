@@ -1,30 +1,37 @@
 import * as types from './mutation-types'
 
 export const mutations = {
-	[types.SET_EXEMPT] (state, {isExempt}) {
-		const selectedUsers = state.users.filter( u => u.isSelected )
+	[types.SET_EXEMPT] (state, {id, isExempt}) {
+		isExempt
+			? handleIsExempt(id, state)
+			: handleIsNotExempt(id, state)
 
-		selectedUsers.forEach( u => {
-			const user = state.exemptions.find( e => e.UserId == u.Identifier )
-			if( !user && isExempt ) {
-				state.exemptions.push({
-					UserId: parseInt(u.Identifier),
-					ActivityId: 'https://ids.brightspace.com/activities/lti/Dev-2',
-					LogHistory: null
-				})
-			} else if ( !isExempt ) {
-				state.exemptions.splice( state.exemptions.indexOf( user ), 1)
-			}
-		})
+		window.postMessage('update-activity-exemptions', '*')
 	},
 
 	[types.SET_USER_SELECTION] (state, {Identifier, isSelect}) {
-		const user = state.users.find( u => u.Identifier === Identifier )
+		const user = state.users.filter( u => u.Identifier === Identifier )[0]
 		user.isSelected = isSelect
+	},
+
+	[types.SET_CLASSLIST_URL] (state, url) {
+		state.classlistURL = url
+	},
+
+	[types.SET_EXEMPTIONS_URL] (state, url) {
+		state.exemptionsURL = url
+	},
+
+	[types.SET_EXEMPTION_UPDATE_URL] (state, url) {
+		state.exemptionUpdateURL = url
 	},
 
 	[types.LOAD_USERS] (state, users) {
 		state.users = users
+	},
+
+	[types.LOAD_MORE_USERS] (state, users) {
+		state.users.push(...users)
 	},
 
 	[types.LOAD_PAGINGINFO] (state, pagingInfo) {
@@ -35,4 +42,21 @@ export const mutations = {
 	[types.LOAD_EXEMPTIONS] (state, exemptions) {
 		state.exemptions = exemptions
 	}
+}
+
+function handleIsExempt(userId, state) {
+	if( state.exemptions.find( exemption => exemption.UserId === userId ) ) {
+		return;
+	}
+
+	state.exemptions.push( { UserId: userId } )
+}
+
+function handleIsNotExempt(userId, state) {
+	const user = state.exemptions.find( exemption => exemption.UserId === userId )
+	if( !user ) {
+		return;
+	}
+
+	state.exemptions.splice( state.exemptions.indexOf( user ), 1 )
 }

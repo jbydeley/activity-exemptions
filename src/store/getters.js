@@ -7,7 +7,7 @@ export const getters = {
 	},
 	
 	isUserExempt(state) {
-		return ({Identifier}) => state.exemptions.some( e => e.UserId == Identifier )
+		return ({Identifier}) => state.exemptions.some( user => user.UserId == Identifier )
 	},
 
 	exemptionCount(state) {
@@ -15,6 +15,10 @@ export const getters = {
 	},
 
 	allSelected(state) {
-		return state.users.filter( u => u.isSelected ).length === state.users.length;
+		return state.users.every( u => u.isSelected )
+	},
+
+	hasMoreItems(state) {
+		return state.hasMoreItems
 	}
 }

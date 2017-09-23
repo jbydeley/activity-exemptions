@@ -12,12 +12,16 @@ import {actions} from './actions'
 const debug = process.env.NODE_ENV !== 'production'
 
 export const store = new Vuex.Store({
-	plugins: debug ? [ImplicitSave] : [],
+	plugins: debug ? [] : [ImplicitSave],
 	state: {
 		users: [],
 		exemptions: [],
 		bookmark: '',
-		hasMoreData: true
+		hasMoreItems: true,
+		classlistURL: '',
+		exemptionsURL: '',
+		exemptionUpdateURL: '',
+		thing: false
 	},
 	getters,
 	mutations,
