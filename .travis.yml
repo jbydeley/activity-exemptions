@@ -20,7 +20,5 @@ script:
     - npm run test
 after_success:
     - test "$TRAVIS_REPO_SLUG" = "Brightspace/activity-exemptions"
-      && test "$TRAVIS_BRANCH" = "master"
-      && test "$TRAVIS_PULL_REQUEST" = "false"
       && test "x$TRAVIS_TAG" != "x"
       && npm run publish
