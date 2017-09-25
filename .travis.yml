@@ -1,0 +1,17 @@
+language: node_js
+sudo: false
+node_js: 8
+dist: trusty
+addons:
+    firefox: latest
+    apt:
+        sources:
+            - google-chrome
+        packages:
+            - google-chrome-stable
+before_install:
+    - export PATH=$PWD/node_modules/.bin:$PATH
+install:
+    - npm install
+script:
+    - npm run test

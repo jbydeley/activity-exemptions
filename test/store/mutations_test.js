@@ -1,4 +1,4 @@
-require('test/find')
+require('polyfill/find')
 describe('mutations', () => {
 	const {mutations} = require('store/mutations')
 	

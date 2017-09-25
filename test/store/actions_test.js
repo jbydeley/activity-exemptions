@@ -1,21 +1,21 @@
-import axios from 'axios'
-import moxios from 'moxios'
-import sinon from 'sinon'
+// import axios from 'axios'
+// import moxios from 'moxios'
+// import sinon from 'sinon'
 
-import actions from 'store/actions'
+// import actions from 'store/actions'
 
-describe('actions', () => {
-	describe('setUnexempt', () => {
-		beforeEach(() => {
-			moxios.install()
-		})
+// describe('actions', () => {
+// 	describe('setUnexempt', () => {
+// 		beforeEach(() => {
+// 			moxios.install()
+// 		})
 
-		afterEach(() => {
-			moxios.uninstall()
-		})
+// 		afterEach(() => {
+// 			moxios.uninstall()
+// 		})
 
-		it('should work', () => {
+// 		it('should work', () => {
 
-		})
-	})
-})
+// 		})
+// 	})
+// })
