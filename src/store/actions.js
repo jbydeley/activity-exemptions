@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import * as types from './mutation-types'
 
-var token = D2L.LP.Web.Authentication.Xsrf.GetXsrfToken();
+const token = D2L.LP.Web.Authentication.Xsrf.GetXsrfToken();
 
 const d2lAxios = axios.create({
 	withCredentials: true,
@@ -16,19 +16,9 @@ const d2lAxios = axios.create({
 export const actions = {
 	setExempt({commit, state}) {
 		const selectedUsers = state.users.filter( u => u.isSelected && !state.exemptions.find( e => e.UserId == u.Identifier ) )
-		var shouldFail = false;
-
-		var count = selectedUsers.length
 
 		axios.all(selectedUsers.map( user => {
-			let url = `${state.exemptionUpdateURL}&userId=${user.Identifier}`
-
-			if ( !shouldFail ) {
-				shouldFail = true
-				url = '/404'
-			}
-
-			d2lAxios.post(url)
+			d2lAxios.post(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
 				.then( resp => {
 					count--
 					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true}) 
@@ -77,6 +67,7 @@ export const actions = {
 			.then( resp => {
 				commit( types.LOAD_USERS, resp.data.Items.map( r => {
 					r.isSelected = false
+					r.Identifier = parseInt(r.Identifier)
 					return r
 				}))
 
@@ -98,8 +89,9 @@ export const actions = {
 	loadMore({commit, state}) {
 		axios.get(`${state.classlistURL}?bookmark=${state.bookmark}`)
 			.then( resp => {
-				commit( types.LOAD_MORE_USERS, resp.data.Items.map( r => {
+				commit( types.LOAD_USERS, resp.data.Items.map( r => {
 					r.isSelected = false
+					r.Identifier = parseInt(r.Identifier)
 					return r
 				}) )
 				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )

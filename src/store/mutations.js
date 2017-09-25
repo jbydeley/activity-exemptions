@@ -10,7 +10,11 @@ export const mutations = {
 	},
 
 	[types.SET_USER_SELECTION] (state, {Identifier, isSelect}) {
-		const user = state.users.filter( u => u.Identifier === Identifier )[0]
+		const user = state.users.find( u => u.Identifier === Identifier )
+		if( !user ) {
+			return
+		}
+
 		user.isSelected = isSelect
 	},
 
@@ -27,10 +31,6 @@ export const mutations = {
 	},
 
 	[types.LOAD_USERS] (state, users) {
-		state.users = users
-	},
-
-	[types.LOAD_MORE_USERS] (state, users) {
 		state.users.push(...users)
 	},
 
