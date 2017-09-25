@@ -19,7 +19,7 @@ module.exports = function karmaConfig(config) {
     logLevel: config.LOG_ERROR,
     autoWatch: true,
     browsers: ['PhantomJS', 'Firefox', 'Chrome'],
-    singleRun: false,
+    singleRun: true,
     concurrency: Infinity,
     webpack: webpackConfig,
   });
