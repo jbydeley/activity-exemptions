@@ -1,4 +1,5 @@
 # activity-exemptions
+[![Build Status](https://travis-ci.org/Brightspace/activity-exemptions.svg?branch=master)](https://travis-ci.org/Brightspace/activity-exemptions)
 
 Display a list of users that can be exempted / unexempted for a specific activity
 
