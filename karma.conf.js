@@ -16,7 +16,7 @@ module.exports = function karmaConfig(config) {
     reporters: ['progress'],
     port: 9876,
     colors: true,
-    logLevel: config.LOG_INFO,
+    logLevel: config.LOG_ERROR,
     autoWatch: true,
     browsers: ['PhantomJS'],
     singleRun: false,

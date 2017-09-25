@@ -2,7 +2,7 @@ import axios from 'axios'
 
 import * as types from './mutation-types'
 
-var token = D2L.LP.Web.Authentication.Xsrf.GetXsrfToken();
+const token = D2L.LP.Web.Authentication.Xsrf.GetXsrfToken();
 
 const d2lAxios = axios.create({
 	withCredentials: true,
@@ -16,24 +16,15 @@ const d2lAxios = axios.create({
 export const actions = {
 	setExempt({commit, state}) {
 		const selectedUsers = state.users.filter( u => u.isSelected && !state.exemptions.find( e => e.UserId == u.Identifier ) )
-		var shouldFail = false;
-
-		var count = selectedUsers.length
+		let errorCount = []
 
 		axios.all(selectedUsers.map( user => {
-			let url = `${state.exemptionUpdateURL}&userId=${user.Identifier}`
-
-			if ( !shouldFail ) {
-				shouldFail = true
-				url = '/404'
-			}
-
-			d2lAxios.post(url)
+			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true}) 
+			d2lAxios.post(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
 				.then( resp => {
-					count--
 					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true}) 
 				})
-				.catch( e => console.log(`Inner: ${e}`) )
+				.catch( e => errorCount.push(e) )
 		}))
 		.then(axios.spread( () => {
 			D2L.LP.Web.UI.Rpc.Connect(
@@ -44,19 +35,30 @@ export const actions = {
 			)
 		}))
 
-		if( count === 0 ) {
-			console.log('Success')
+		if( errorCount.length > 0 ) {
+			errorCount.forEach( e => {
+				console.log(e)
+			})
 		}
 	},
 
 	setUnexempt({commit, state}) {
 		const selectedUsers = state.users.filter( u => u.isSelected && state.exemptions.find( e => e.UserId == u.Identifier ) )
 
-		selectedUsers.forEach( user => {
+		axios.all(selectedUsers.forEach( user => {
+			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
 			d2lAxios.delete(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
 				.then( resp => commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false}) )
 				.catch( e => console.log(e) )
-		})
+		}))
+		.then(axios.spread( () => {
+			D2L.LP.Web.UI.Rpc.Connect(
+				'GET',
+				new D2L.LP.Web.Http.UrlLocation.Create(
+					'/d2l/le/manageexemptions/6609/UserExempted'
+				)
+			)
+		}))
 	},
 
 	toggleSelection({commit}, user) {

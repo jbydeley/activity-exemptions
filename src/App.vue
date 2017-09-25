@@ -42,11 +42,6 @@ export default {
       locale: 'en'
     }
   },
-  watch: {
-    locale (val) {
-      this.$i18n.locale = val
-    }
-  },
   computed: {
     ...mapGetters(['allUsers', 'isUserExempt', 'exemptionCount', 'allSelected', 'hasMoreItems'])
   },
