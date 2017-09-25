@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 
-import App from './App.vue'
+import 'polyfill/find'
 
+import App from './App.vue'
 import {store} from './store/'
 
 Vue.use(VueI18n)

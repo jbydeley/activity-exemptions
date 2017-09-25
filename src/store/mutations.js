@@ -31,6 +31,10 @@ export const mutations = {
 	},
 
 	[types.LOAD_USERS] (state, users) {
+		state.users = users
+	},
+
+	[types.LOAD_MORE_USERS] (state, users) {
 		state.users.push(...users)
 	},
 

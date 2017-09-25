@@ -16,14 +16,15 @@ const d2lAxios = axios.create({
 export const actions = {
 	setExempt({commit, state}) {
 		const selectedUsers = state.users.filter( u => u.isSelected && !state.exemptions.find( e => e.UserId == u.Identifier ) )
+		let errorCount = []
 
 		axios.all(selectedUsers.map( user => {
+			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true}) 
 			d2lAxios.post(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
 				.then( resp => {
-					count--
 					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true}) 
 				})
-				.catch( e => console.log(`Inner: ${e}`) )
+				.catch( e => errorCount.push(e) )
 		}))
 		.then(axios.spread( () => {
 			D2L.LP.Web.UI.Rpc.Connect(
@@ -34,19 +35,30 @@ export const actions = {
 			)
 		}))
 
-		if( count === 0 ) {
-			console.log('Success')
+		if( errorCount.length > 0 ) {
+			errorCount.forEach( e => {
+				console.log(e)
+			})
 		}
 	},
 
 	setUnexempt({commit, state}) {
 		const selectedUsers = state.users.filter( u => u.isSelected && state.exemptions.find( e => e.UserId == u.Identifier ) )
 
-		selectedUsers.forEach( user => {
+		axios.all(selectedUsers.forEach( user => {
+			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
 			d2lAxios.delete(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
 				.then( resp => commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false}) )
 				.catch( e => console.log(e) )
-		})
+		}))
+		.then(axios.spread( () => {
+			D2L.LP.Web.UI.Rpc.Connect(
+				'GET',
+				new D2L.LP.Web.Http.UrlLocation.Create(
+					'/d2l/le/manageexemptions/6609/UserExempted'
+				)
+			)
+		}))
 	},
 
 	toggleSelection({commit}, user) {
@@ -67,7 +79,6 @@ export const actions = {
 			.then( resp => {
 				commit( types.LOAD_USERS, resp.data.Items.map( r => {
 					r.isSelected = false
-					r.Identifier = parseInt(r.Identifier)
 					return r
 				}))
 
@@ -89,9 +100,8 @@ export const actions = {
 	loadMore({commit, state}) {
 		axios.get(`${state.classlistURL}?bookmark=${state.bookmark}`)
 			.then( resp => {
-				commit( types.LOAD_USERS, resp.data.Items.map( r => {
+				commit( types.LOAD_MORE_USERS, resp.data.Items.map( r => {
 					r.isSelected = false
-					r.Identifier = parseInt(r.Identifier)
 					return r
 				}) )
 				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
