@@ -19,7 +19,6 @@ export const actions = {
 		let errorCount = []
 
 		axios.all(selectedUsers.map( user => {
-			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true}) 
 			d2lAxios.post(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
 				.then( resp => {
 					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true}) 
@@ -30,7 +29,10 @@ export const actions = {
 			D2L.LP.Web.UI.Rpc.Connect(
 				'GET',
 				new D2L.LP.Web.Http.UrlLocation.Create(
-					'/d2l/le/manageexemptions/6609/UserExempted'
+					'/d2l/le/manageexemptions/UserExempted',
+					{
+						message: 'Saved successfully.'
+					}
 				)
 			)
 		}))
@@ -45,8 +47,7 @@ export const actions = {
 	setUnexempt({commit, state}) {
 		const selectedUsers = state.users.filter( u => u.isSelected && state.exemptions.find( e => e.UserId == u.Identifier ) )
 
-		axios.all(selectedUsers.forEach( user => {
-			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
+		axios.all(selectedUsers.map( user => {
 			d2lAxios.delete(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
 				.then( resp => commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false}) )
 				.catch( e => console.log(e) )
@@ -55,10 +56,14 @@ export const actions = {
 			D2L.LP.Web.UI.Rpc.Connect(
 				'GET',
 				new D2L.LP.Web.Http.UrlLocation.Create(
-					'/d2l/le/manageexemptions/6609/UserExempted'
+					'/d2l/le/manageexemptions/UserExempted',
+					{
+						message: 'Saved successfully.'
+					}
 				)
 			)
 		}))
+		.catch( e => console.log(`Caught ${e}`) )
 	},
 
 	toggleSelection({commit}, user) {
