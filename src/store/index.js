@@ -20,9 +20,10 @@ export const store = new Vuex.Store({
 		hasMoreItems: true,
 		classlistURL: '',
 		exemptionsURL: '',
-		exemptionUpdateURL: ''
+		exemptionUpdateURL: '',
+		isLoading: true
 	},
 	getters,
 	mutations,
 	actions
-});
+})

@@ -1,8 +1,9 @@
 import axios from 'axios'
 
+import {toast, toastc} from 'toast'
 import * as types from './mutation-types'
 
-const token = D2L.LP.Web.Authentication.Xsrf.GetXsrfToken();
+const token = D2L.LP.Web.Authentication.Xsrf.GetXsrfToken()
 
 const d2lAxios = axios.create({
 	withCredentials: true,
@@ -14,56 +15,49 @@ const d2lAxios = axios.create({
 })
 
 export const actions = {
+	/*
+	 * setExempt( context )
+	 * 
+	 * setExempt finds all users that are selected and unexempt and attempts
+	 * to post to the exemptionUpdateURL with the user's ID. A toast message 
+	 * will be 
+	 */
 	setExempt({commit, state}) {
 		const selectedUsers = state.users.filter( u => u.isSelected && !state.exemptions.find( e => e.UserId == u.Identifier ) )
-		let errorCount = []
+		let errorCount = 0
 
 		axios.all(selectedUsers.map( user => {
-			d2lAxios.post(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
-				.then( resp => {
-					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true}) 
+			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true})
+			return d2lAxios.post(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
+				.catch( e => {
+					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
+					errorCount++
 				})
-				.catch( e => errorCount.push(e) )
 		}))
 		.then(axios.spread( () => {
-			D2L.LP.Web.UI.Rpc.Connect(
-				'GET',
-				new D2L.LP.Web.Http.UrlLocation.Create(
-					'/d2l/le/manageexemptions/UserExempted',
-					{
-						message: 'Saved successfully.'
-					}
-				)
-			)
+			const count = selectedUsers.length - errorCount
+			toastc('toastExempt', count, {count})
+			window.postMessage('update-activity-exemptions', '*')
 		}))
-
-		if( errorCount.length > 0 ) {
-			errorCount.forEach( e => {
-				console.log(e)
-			})
-		}
 	},
 
 	setUnexempt({commit, state}) {
 		const selectedUsers = state.users.filter( u => u.isSelected && state.exemptions.find( e => e.UserId == u.Identifier ) )
+		let errorCount = 0
 
 		axios.all(selectedUsers.map( user => {
-			d2lAxios.delete(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
-				.then( resp => commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false}) )
-				.catch( e => console.log(e) )
+			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
+			return d2lAxios.delete(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
+				.catch( e => {
+					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true})
+					errorCount++
+				})
 		}))
 		.then(axios.spread( () => {
-			D2L.LP.Web.UI.Rpc.Connect(
-				'GET',
-				new D2L.LP.Web.Http.UrlLocation.Create(
-					'/d2l/le/manageexemptions/UserExempted',
-					{
-						message: 'Saved successfully.'
-					}
-				)
-			)
+			const count = selectedUsers.length - errorCount
+			toastc('toastUnexempt', count, {count})
+			window.postMessage('update-activity-exemptions', '*')
 		}))
-		.catch( e => console.log(`Caught ${e}`) )
 	},
 
 	toggleSelection({commit}, user) {
@@ -76,6 +70,7 @@ export const actions = {
 	},
 
 	loadUsers({commit}, {classlistURL, exemptionsURL, exemptionUpdateURL}) {
+		commit(types.IS_LOADING, true)
 		commit(types.SET_CLASSLIST_URL, classlistURL)
 		commit(types.SET_EXEMPTIONS_URL, exemptionsURL)
 		commit(types.SET_EXEMPTION_UPDATE_URL, exemptionUpdateURL)
@@ -90,19 +85,23 @@ export const actions = {
 				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
 			})
 			.catch( e => {
+				toast('toastCouldNotLoad')
 				console.log(e)
 			})
 
 		axios.get(exemptionsURL)
 			.then( resp => {
 				commit( types.LOAD_EXEMPTIONS, resp.data )
+				commit( types.IS_LOADING, false )
 			})
 			.catch( e => {
+				toast('toastCouldNotLoad')
 				console.log(e)
 			})
 	},
 
 	loadMore({commit, state}) {
+		commit(types.IS_LOADING, true)
 		axios.get(`${state.classlistURL}?bookmark=${state.bookmark}`)
 			.then( resp => {
 				commit( types.LOAD_MORE_USERS, resp.data.Items.map( r => {
@@ -110,8 +109,10 @@ export const actions = {
 					return r
 				}) )
 				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
+				commit( types.IS_LOADING, false )
 			})
 			.catch( e => {
+				toast('toastCouldNotLoad')
 				console.log(e)
 			})
 	}

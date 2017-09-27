@@ -6,19 +6,23 @@ export const getters = {
 		}));
 	},
 	
-	isUserExempt(state) {
-		return ({Identifier}) => state.exemptions.some( user => user.UserId == Identifier )
+	isUserExempt({exemptions}) {
+		return ({Identifier}) => exemptions.some( user => user.UserId == Identifier )
 	},
 
-	exemptionCount(state) {
-		return state.exemptions.length
+	exemptionCount({exemptions}) {
+		return exemptions.length
 	},
 
-	allSelected(state) {
-		return state.users.every( u => u.isSelected )
+	allSelected({users}) {
+		return users.every( u => u.isSelected )
 	},
 
-	hasMoreItems(state) {
-		return state.hasMoreItems
+	hasMoreItems({hasMoreItems}) {
+		return hasMoreItems
+	},
+
+	isLoading({isLoading}) {
+		return isLoading
 	}
 }

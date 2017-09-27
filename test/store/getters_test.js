@@ -108,4 +108,24 @@ describe('getters', () => {
 			expect(hasMoreItems(state)).toEqual(false)
 		})
 	})
+
+	describe('isLoading', () => {
+		const {isLoading} = getters
+
+		it('should return true when true', () => {
+			let state = {
+				isLoading: true
+			}
+
+			expect(isLoading(state)).toEqual(true)
+		})
+
+		it('should return false when false', () => {
+			let state = {
+				isLoading: false
+			}
+
+			expect(isLoading(state)).toEqual(false)
+		})
+	})
 })
