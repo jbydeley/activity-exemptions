@@ -21,10 +21,13 @@
       <tbody>
         <tr v-for="user in allUsers">
           <td>
-            <input :aria-label="$t('ariaSelectUser', {fullName: user.fullName})" type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
+            <input :aria-label="ariaSelectText(user)" type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
           </td>
           <td>{{user.fullName}}</td>
-          <td><span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span></td>
+          <td>
+            <span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span>
+            <span v-else class="d2l-offscreen">{{ $t('lblNotExempt') }}</span>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -45,10 +48,29 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['allUsers', 'isUserExempt', 'exemptionCount', 'allSelected', 'hasMoreItems', 'isLoading'])
+    ...mapGetters([
+      'allUsers',
+      'isUserExempt',
+      'exemptionCount',
+      'allSelected',
+      'hasMoreItems',
+      'isLoading'
+    ]),
+
+    ariaSelectText() {
+      return (user) => this.isUserExempt(user)
+        ? this.$t('ariaSelectExemptUser', {fullName: user.fullName})
+        : this.$t('ariaSelectNotExemptUser', {fullName: user.fullName})
+    }
   },
   methods: {
-    ...mapActions(['toggleSelection', 'setExempt', 'setUnexempt', 'selectAll', 'loadMore'])
+    ...mapActions([
+      'toggleSelection',
+      'setExempt',
+      'setUnexempt',
+      'selectAll',
+      'loadMore'
+    ])
   }
 }
 </script>
@@ -195,6 +217,14 @@ tbody > tr:last-child td {
     opacity: 0.5;
   }
 
+  .d2l-offscreen {
+    word-wrap: normal !important;
+    position: absolute !important;
+    left: -10000px;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+  }
   /* Firefox only, fixed in Firefox 54 */
   /* https://bugzilla.mozilla.org/show_bug.cgi?id=605985 */
   @-moz-document url-prefix() {
