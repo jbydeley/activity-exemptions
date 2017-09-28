@@ -5,8 +5,6 @@ export const mutations = {
 		isExempt
 			? handleIsExempt(id, state)
 			: handleIsNotExempt(id, state)
-
-		window.postMessage('update-activity-exemptions', '*')
 	},
 
 	[types.SET_USER_SELECTION] (state, {Identifier, isSelect}) {
@@ -45,12 +43,16 @@ export const mutations = {
 
 	[types.LOAD_EXEMPTIONS] (state, exemptions) {
 		state.exemptions = exemptions
+	},
+
+	[types.IS_LOADING] (state, isLoading) {
+		state.isLoading = isLoading
 	}
 }
 
 function handleIsExempt(userId, state) {
 	if( state.exemptions.find( exemption => exemption.UserId === userId ) ) {
-		return;
+		return
 	}
 
 	state.exemptions.push( { UserId: userId } )
@@ -59,7 +61,7 @@ function handleIsExempt(userId, state) {
 function handleIsNotExempt(userId, state) {
 	const user = state.exemptions.find( exemption => exemption.UserId === userId )
 	if( !user ) {
-		return;
+		return
 	}
 
 	state.exemptions.splice( state.exemptions.indexOf( user ), 1 )

@@ -1,16 +1,18 @@
 <template>
   <div id="activity-exemptions">
-    <button class="d2l-button primary" @click="setExempt">{{ $t('btnExempt') }}</button>
-    <button class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
+    <button :aria-label="$t('ariaExempt')" class="d2l-button primary" @click="setExempt">
+      {{ $t('btnExempt') }}
+    </button>
+    <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
 
     <p>
       {{ $t('lblExemptionCount', {exemptionCount}) }}
     </p>
-    <table>
+    <table :summary="$t('ariaTableSummary')">
       <thead>
         <tr>
           <th>
-            <input type="checkbox" class="d2l-checkbox" :checked="allSelected" @change="selectAll">
+            <input :aria-label="$t('ariaSelectUnselectAll')" type="checkbox" class="d2l-checkbox" :checked="allSelected" @change="selectAll">
           </th>
           <th>{{ $t('lblLastFirstName') }}</th>
           <th>{{ $t('lblExemptStatus') }}</th>
@@ -19,21 +21,24 @@
       <tbody>
         <tr v-for="user in allUsers">
           <td>
-            <input type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
+            <input :aria-label="ariaSelectText(user)" type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
           </td>
           <td>{{user.fullName}}</td>
-          <td><span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span></td>
+          <td>
+            <span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span>
+            <span v-else class="d2l-offscreen">{{ $t('lblNotExempt') }}</span>
+          </td>
         </tr>
       </tbody>
     </table>
-    <button class="d2l-button" v-if="hasMoreItems" @click="loadMore">{{ $t('btnLoadMore') }}</button>
-    <button class="d2l-button primary" @click="setExempt">{{ $t('btnExempt') }}</button>
-    <button class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
+    <button :aria-label="$t('ariaLoadMore')" :disabled="isLoading" class="d2l-button" v-if="hasMoreItems" @click="loadMore">{{ $t('btnLoadMore') }}</button>
+    <button :aria-label="$t('ariaExempt')" class="d2l-button primary" @click="setExempt">{{ $t('btnExempt') }}</button>
+    <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'activity-exemptions',
@@ -43,10 +48,29 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['allUsers', 'isUserExempt', 'exemptionCount', 'allSelected', 'hasMoreItems'])
+    ...mapGetters([
+      'allUsers',
+      'isUserExempt',
+      'exemptionCount',
+      'allSelected',
+      'hasMoreItems',
+      'isLoading'
+    ]),
+
+    ariaSelectText() {
+      return (user) => this.isUserExempt(user)
+        ? this.$t('ariaSelectExemptUser', {fullName: user.fullName})
+        : this.$t('ariaSelectNotExemptUser', {fullName: user.fullName})
+    }
   },
   methods: {
-    ...mapActions(['toggleSelection', 'setExempt', 'setUnexempt', 'selectAll', 'loadMore'])
+    ...mapActions([
+      'toggleSelection',
+      'setExempt',
+      'setUnexempt',
+      'selectAll',
+      'loadMore'
+    ])
   }
 }
 </script>
@@ -193,6 +217,14 @@ tbody > tr:last-child td {
     opacity: 0.5;
   }
 
+  .d2l-offscreen {
+    word-wrap: normal !important;
+    position: absolute !important;
+    left: -10000px;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+  }
   /* Firefox only, fixed in Firefox 54 */
   /* https://bugzilla.mozilla.org/show_bug.cgi?id=605985 */
   @-moz-document url-prefix() {
