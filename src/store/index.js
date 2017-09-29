@@ -16,7 +16,8 @@ export const store = new Vuex.Store({
 		classlistURL: '',
 		exemptionsURL: '',
 		exemptionUpdateURL: '',
-		isLoading: true
+		isLoading: true,
+		showOrgIdColumn: false
 	},
 	getters,
 	mutations,

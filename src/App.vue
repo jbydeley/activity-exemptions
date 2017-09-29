@@ -6,7 +6,8 @@
     <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
 
     <p>
-      {{ $t('lblExemptionCount', {exemptionCount}) }}
+      <span class="exemption-count" v-t="'lblExemptions'"></span>
+      {{ exemptionCount }}
     </p>
     <table :summary="$t('ariaTableSummary')">
       <thead>
@@ -14,7 +15,11 @@
           <th>
             <input :aria-label="$t('ariaSelectUnselectAll')" type="checkbox" class="d2l-checkbox" :checked="allSelected" @change="selectAll">
           </th>
-          <th>{{ $t('lblLastFirstName') }}</th>
+          <th>
+            <span class="first-name" v-t="'lblLastName'"></span>
+            <span class="last-name" v-t="'lblFirstName'"></span>
+          </th>
+          <th v-if="showOrgIdColumn">{{ $t('lblOrgDefinedId') }}</th>
           <th>{{ $t('lblExemptStatus') }}</th>
         </tr>
       </thead>
@@ -24,6 +29,7 @@
             <input :aria-label="ariaSelectText(user)" type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
           </td>
           <td>{{user.fullName}}</td>
+          <td v-if="showOrgIdColumn">{{user.OrgDefinedId}}</td>
           <td>
             <span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span>
             <span v-else class="d2l-offscreen">{{ $t('lblNotExempt') }}</span>
@@ -54,7 +60,8 @@ export default {
       'exemptionCount',
       'allSelected',
       'hasMoreItems',
-      'isLoading'
+      'isLoading',
+      'showOrgIdColumn'
     ]),
 
     ariaSelectText() {
@@ -76,6 +83,29 @@ export default {
 </script>
 
 <style scoped>
+
+.first-name {
+  display: inline-block;
+}
+
+.first-name::after {
+  content: ",";
+}
+
+[dir="rtl"] .last-name::before {
+  content: ",";
+}
+[dir="rtl"] .first-name::after {
+  content: "";
+}
+
+.exemption-count {
+  display: inline-block;
+}
+
+.exemption-count::after {
+  content: ":";
+}
 
 #activity-exemptions {
   color: #565a5c;
@@ -101,6 +131,12 @@ thead tr:first-child {
   border-top: 1px solid #d3d9e3;
 }
 
+[dir="rtl"] th {
+  border-right: 0;
+  border-left: 1px solid #d3d9e3;
+  text-align: right;
+}
+
 th {
   border-top: 1px solid #d3d9e3;
   color: #565a5c;
@@ -112,13 +148,31 @@ th {
   vertical-align: middle;
 }
 
+[dir="rtl"] th:first-child {
+  border-top-right-radius: 0.3rem;
+  border-top-left-radius: 0;
+  border-right: 1px solid #d3d9e3;
+  border-left: 1px solid #d3d9e3;
+}
+
 th:first-child {
   border-top-left-radius: 0.3rem;
   border-left: 1px solid #d3d9e3;
 }
 
+[dir="rtl"] th:last-child {
+  border-top-left-radius: 0.3rem;
+  border-top-right-radius: 0rem;
+}
+
+
 th:last-child {
   border-top-right-radius: 0.3rem;
+}
+
+[dir="rtl"] td {
+  border-left: 1px solid #d3d9e3;
+  border-right: 0;
 }
 
 td {
@@ -127,12 +181,35 @@ td {
   padding: 1rem;
 }
 
+[dir="rtl"] td:first-child {
+  border-right: 1px solid #d3d9e3;
+  border-left: 1px solid #d3d9e3;
+}
+
 td:first-child {
   border-left: 1px solid #d3d9e3;
 }
 
 tbody > tr:last-child td {
   border-bottom: 1px solid #d3d9e3;
+}
+
+[dir="rtl"] tbody > tr:last-child td:first-child {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0.3rem;
+}
+
+tbody > tr:last-child td:first-child {
+  border-bottom-left-radius: 0.3rem;
+}
+
+[dir="rtl"] tbody > tr:last-child td:last-child {
+  border-bottom-left-radius: 0.3rem;
+  border-bottom-right-radius: 0;
+}
+
+tbody > tr:last-child td:last-child {
+  border-bottom-right-radius: 0.3rem;
 }
 
 .d2l-button.primary {
