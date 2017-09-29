@@ -24,5 +24,9 @@ export const getters = {
 
 	isLoading({isLoading}) {
 		return isLoading
+	},
+
+	showOrgIdColumn({showOrgIdColumn}) {
+		return showOrgIdColumn
 	}
 }

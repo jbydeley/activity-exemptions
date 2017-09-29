@@ -9,8 +9,11 @@
 	"lblExempt": "Exempt",
 	"lblNotExempt": "Not Exempt",
 	"lblExemptionCount": "Exemptions: {exemptionCount}",
-	"lblLastFirstName": "Last Name, First Name",
+	"lblExemptions": "Exemptions",
+	"lblLastName": "Last Name",
+	"lblFirstName": "First Name",
 	"lblExemptStatus": "Exempt Status",
+	"lblOrgDefinedId": "Org Defined Id",
 	"btnExempt": "Exempt",
 	"btnUnexempt": "Unexempt",
 	"btnLoadMore": "Load More...",
@@ -18,4 +21,3 @@
 	"toastUnexempt": "Saved successfully. Nothing saved | Saved successfully. 1 user unexempted. | Saved successfully. {count} users unexempted.",
 	"toastCouldNotLoad": "Could not load activity exemption data"
 }
-
