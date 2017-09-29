@@ -13,9 +13,42 @@ describe('getters', () => {
 				}]
 			}
 
-			expect(allUsers(state)[0].fullName).toEqual('Smith, John')
+			expect(allUsers(state)[0].fullName).toEqual('John Smith')
 		})
 
+		it('should map first name when no last name exists', () => {
+			const {allUsers} = getters
+
+			let state = {
+				users: [{
+					FirstName: 'John'
+				}]
+			}
+
+			expect(allUsers(state)[0].fullName).toEqual('John')
+		})
+
+		it('should map last name when no first name exists', () => {
+			const {allUsers} = getters
+
+			let state = {
+				users: [{
+					LastName: 'Smith'
+				}]
+			}
+
+			expect(allUsers(state)[0].fullName).toEqual('Smith')
+		})
+
+		it('should map anonymous user when no names exist', () => {
+			const {allUsers} = getters
+
+			let state = {
+				users: [{}]
+			}
+
+			expect(allUsers(state)[0].fullName).toEqual('Anonymous User')
+		})
 	})
 
 	describe('isUserExempt', () => {

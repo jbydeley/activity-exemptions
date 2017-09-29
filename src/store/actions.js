@@ -116,9 +116,6 @@ export const actions = {
 					return r
 				}))
 
-				if( resp.data.Items.some( u => u.OrgDefinedId != null ) ) {
-					commit( types.SHOW_ORGID_COLUMN )
-				}
 				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
 			})
 			.catch( e => {

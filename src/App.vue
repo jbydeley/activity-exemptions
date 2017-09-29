@@ -15,11 +15,17 @@
           <th>
             <input :aria-label="$t('ariaSelectUnselectAll')" type="checkbox" class="d2l-checkbox" :checked="allSelected" @change="selectAll">
           </th>
+          <!--
+          To support both User Information Privacy and RTL, we need to conditionally
+          render one of four options. If the API changes in the future to support
+          preferred names, this could be reduced or eliminated entirely.
+           -->
           <th>
-            <span class="first-name" v-t="'lblLastName'"></span>
-            <span class="last-name" v-t="'lblFirstName'"></span>
+            <span v-if="canSeeFirstName" v-t="'lblFirstName'"></span>
+            <span v-if="canSeeLastName" v-t="'lblLastName'"></span>
+            <span v-if="!canSeeFirstName && !canSeeLastName" v-t="'lblUser'"></span>
           </th>
-          <th v-if="showOrgIdColumn">{{ $t('lblOrgDefinedId') }}</th>
+          <th v-if="canSeeOrgIdColumn">{{ $t('lblOrgDefinedId') }}</th>
           <th>{{ $t('lblExemptStatus') }}</th>
         </tr>
       </thead>
@@ -29,7 +35,7 @@
             <input :aria-label="ariaSelectText(user)" type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
           </td>
           <td>{{user.fullName}}</td>
-          <td v-if="showOrgIdColumn">{{user.OrgDefinedId}}</td>
+          <td v-if="canSeeOrgIdColumn">{{user.OrgDefinedId}}</td>
           <td>
             <span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span>
             <span v-else class="d2l-offscreen">{{ $t('lblNotExempt') }}</span>
@@ -61,7 +67,9 @@ export default {
       'allSelected',
       'hasMoreItems',
       'isLoading',
-      'showOrgIdColumn'
+      'canSeeOrgIdColumn',
+      'canSeeFirstName',
+      'canSeeLastName'
     ]),
 
     ariaSelectText() {
@@ -83,21 +91,6 @@ export default {
 </script>
 
 <style scoped>
-
-.first-name {
-  display: inline-block;
-}
-
-.first-name::after {
-  content: ",";
-}
-
-[dir="rtl"] .last-name::before {
-  content: ",";
-}
-[dir="rtl"] .first-name::after {
-  content: "";
-}
 
 .exemption-count {
   display: inline-block;

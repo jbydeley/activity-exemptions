@@ -47,10 +47,6 @@ export const mutations = {
 
 	[types.IS_LOADING] (state, isLoading) {
 		state.isLoading = isLoading
-	},
-
-	[types.SHOW_ORGID_COLUMN] (state) {
-		state.showOrgIdColumn = true
 	}
 }
 

@@ -1,8 +1,10 @@
+import {i18n} from 'i18n'
+
 export const getters = {
 	allUsers({users}) {
 		return users.map( u => ({
 			...u,
-			fullName: `${u.LastName}, ${u.FirstName}`
+			fullName: getFullName(u)
 		}));
 	},
 	
@@ -26,7 +28,31 @@ export const getters = {
 		return isLoading
 	},
 
-	showOrgIdColumn({showOrgIdColumn}) {
-		return showOrgIdColumn
+	canSeeOrgIdColumn({users}) {
+		return users.some( u => u.OrgDefinedId != null )
+	},
+
+	canSeeFirstName({users}) {
+		return users.some( u => u.FirstName != null )
+	},
+
+	canSeeLastName({users}) {
+		return users.some( u => u.LastName != null )
 	}
+}
+
+function getFullName(user) {
+	 if( user.LastName && user.FirstName ) {
+		 return `${user.FirstName} ${user.LastName}`
+	 }
+
+	 if( user.LastName ) {
+		 return user.LastName
+	 }
+
+	 if( user.FirstName ) {
+		 return user.FirstName
+	 }
+
+	 return i18n.t('lblAnonymousUser')
 }

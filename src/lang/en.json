@@ -6,6 +6,8 @@
 	"ariaSelectNotExemptUser": "Select {fullName} not exempt",
 	"ariaTableSummary": "The list of users that can have their exemption status modified.",
 	"ariaUnexempt": "Unexempt selected users",
+	"lblAnonymousUser": "Anonymous User",
+	"lblUser": "User",
 	"lblExempt": "Exempt",
 	"lblNotExempt": "Not Exempt",
 	"lblExemptionCount": "Exemptions: {exemptionCount}",
