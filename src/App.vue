@@ -6,7 +6,7 @@
     <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
 
     <p>
-      <span class="exemption-count" v-t="'lblExemptions'"></span>
+      <span class="exemption-count">{{ $t('lblExemptions') }}</span>
       {{ exemptionCount }}
     </p>
     <table :summary="$t('ariaTableSummary')">
@@ -21,9 +21,9 @@
           preferred names, this could be reduced or eliminated entirely.
            -->
           <th>
-            <span v-if="canSeeFirstName" v-t="'lblFirstName'"></span>
-            <span v-if="canSeeLastName" v-t="'lblLastName'"></span>
-            <span v-if="!canSeeFirstName && !canSeeLastName" v-t="'lblUser'"></span>
+            <span v-if="canSeeFirstName">{{ $t('lblFirstName') }}</span>
+            <span v-if="canSeeLastName">{{ $t('lblLastName') }}</span>
+            <span v-if="!canSeeFirstName && !canSeeLastName">{{ $t('lblUser') }}</span>
           </th>
           <th v-if="canSeeOrgIdColumn">{{ $t('lblOrgDefinedId') }}</th>
           <th>{{ $t('lblExemptStatus') }}</th>
@@ -59,6 +59,7 @@ export default {
       locale: 'en'
     }
   },
+
   computed: {
     ...mapGetters([
       'allUsers',
@@ -78,19 +79,24 @@ export default {
         : this.$t('ariaSelectNotExemptUser', {fullName: user.fullName})
     }
   },
+
   methods: {
     ...mapActions([
-      'toggleSelection',
+      'loadMore',
+      'selectAll',
       'setExempt',
       'setUnexempt',
-      'selectAll',
-      'loadMore'
+      'toggleSelection'
     ])
   }
 }
 </script>
 
 <style scoped>
+
+th > span {
+  font-weight: inherit;
+}
 
 .exemption-count {
   display: inline-block;

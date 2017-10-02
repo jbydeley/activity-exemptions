@@ -47,6 +47,10 @@ export const mutations = {
 
 	[types.IS_LOADING] (state, isLoading) {
 		state.isLoading = isLoading
+	},
+
+	[types.SET_TOKEN] (state, token) {
+		state.token = token
 	}
 }
 

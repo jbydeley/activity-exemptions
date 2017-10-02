@@ -1,18 +1,17 @@
 import axios from 'axios'
-
-import {toast, toastc} from 'toast'
+import {i18n} from 'i18n'
 import * as types from './mutation-types'
 
-const token = D2L.LP.Web.Authentication.Xsrf.GetXsrfToken()
-
-const d2lAxios = axios.create({
-	withCredentials: true,
-	headers: {
-		'Access-Control-Allow-Origin': '*',
-		'Content-Type': 'application/json',
-		'X-CSRF-Token': token
-	}
-})
+function d2lAxios(token) {
+	return axios.create({
+		withCredentials: true,
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': token
+		}
+	})
+}
 
 /*
  * actions
@@ -36,7 +35,7 @@ export const actions = {
 
 		axios.all(selectedUsers.map( user => {
 			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true})
-			return d2lAxios.post(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
+			return d2lAxios(state.token).post(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
 				.catch( e => {
 					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
 					errorCount++
@@ -44,8 +43,8 @@ export const actions = {
 		}))
 		.then(axios.spread( () => {
 			const count = selectedUsers.length - errorCount
-			toastc('toastExempt', count, {count})
-			window.postMessage('update-activity-exemptions', '*')
+			this.dispatch('toast', i18n.tc('toastExempt', count, {count}))
+			this.dispatch('updateExemptionCount')
 		}))
 	},
 
@@ -62,7 +61,7 @@ export const actions = {
 
 		axios.all(selectedUsers.map( user => {
 			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
-			return d2lAxios.delete(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
+			return d2lAxios(state.token).delete(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
 				.catch( e => {
 					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true})
 					errorCount++
@@ -70,8 +69,8 @@ export const actions = {
 		}))
 		.then(axios.spread( () => {
 			const count = selectedUsers.length - errorCount
-			toastc('toastUnexempt', count, {count})
-			window.postMessage('update-activity-exemptions', '*')
+			this.dispatch('toast', i18n.tc('toastUnexempt', count, {count}))
+			this.dispatch('updateExemptionCount')
 		}))
 	},
 
@@ -103,13 +102,10 @@ export const actions = {
 	 * and exemption list. While loading, state.isLoading will be set
 	 * to true
 	 */
-	loadUsers({commit}, {classlistURL, exemptionsURL, exemptionUpdateURL}) {
+	loadUsers({commit, state}) {
 		commit(types.IS_LOADING, true)
-		commit(types.SET_CLASSLIST_URL, classlistURL)
-		commit(types.SET_EXEMPTIONS_URL, exemptionsURL)
-		commit(types.SET_EXEMPTION_UPDATE_URL, exemptionUpdateURL)
 
-		axios.get(classlistURL)
+		axios.get(state.classlistURL)
 			.then( resp => {
 				commit( types.LOAD_USERS, resp.data.Items.map( r => {
 					r.isSelected = false
@@ -119,17 +115,17 @@ export const actions = {
 				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
 			})
 			.catch( e => {
-				toast('toastCouldNotLoad')
+				this.dispatch('toast', i18n.t('toastCouldNotLoad'))
 				console.log(e)
 			})
 
-		axios.get(exemptionsURL)
+		axios.get(state.exemptionsURL)
 			.then( resp => {
 				commit( types.LOAD_EXEMPTIONS, resp.data )
 				commit( types.IS_LOADING, false )
 			})
 			.catch( e => {
-				toast('toastCouldNotLoad')
+				this.dispatch('toast', i18n.t('toastCouldNotLoad'))
 				console.log(e)
 			})
 	},
@@ -152,7 +148,7 @@ export const actions = {
 				commit( types.IS_LOADING, false )
 			})
 			.catch( e => {
-				toast('toastCouldNotLoad')
+				this.dispatch('toast', i18n.t('toastCouldNotLoad'))
 				console.log(e)
 			})
 	}
