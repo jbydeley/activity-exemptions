@@ -1,39 +1,56 @@
 <template>
-  <div id="activity-exemptions">
-    <button class="d2l-button primary" @click="setExempt">{{ $t('btnExempt') }}</button>
-    <button class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
+  <div :id="localId" class="activity-exemptions">
+    <button :aria-label="$t('ariaExempt')" class="d2l-button primary" @click="setExempt">
+      {{ $t('btnExempt') }}
+    </button>
+    <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
 
     <p>
-      {{ $t('lblExemptionCount', {exemptionCount}) }}
+      <span class="exemption-count">{{ $t('lblExemptions') }}</span>
+      {{ exemptionCount }}
     </p>
-    <table>
+    <table :summary="$t('ariaTableSummary')">
       <thead>
         <tr>
           <th>
-            <input type="checkbox" class="d2l-checkbox" :checked="allSelected" @change="selectAll">
+            <input :aria-label="$t('ariaSelectUnselectAll')" type="checkbox" class="d2l-checkbox" :checked="allSelected" @change="selectAll">
           </th>
-          <th>{{ $t('lblLastFirstName') }}</th>
+          <!--
+          To support both User Information Privacy and RTL, we need to conditionally
+          render one of four options. If the API changes in the future to support
+          preferred names, this could be reduced or eliminated entirely.
+           -->
+          <th>
+            <span v-if="canSeeFirstName">{{ $t('lblFirstName') }}</span>
+            <span v-if="canSeeLastName">{{ $t('lblLastName') }}</span>
+            <span v-if="!canSeeFirstName && !canSeeLastName">{{ $t('lblUser') }}</span>
+          </th>
+          <th v-if="canSeeOrgIdColumn">{{ $t('lblOrgDefinedId') }}</th>
           <th>{{ $t('lblExemptStatus') }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="user in allUsers">
           <td>
-            <input type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
+            <input :aria-label="ariaSelectText(user)" type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
           </td>
           <td>{{user.fullName}}</td>
-          <td><span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span></td>
+          <td v-if="canSeeOrgIdColumn">{{user.OrgDefinedId}}</td>
+          <td>
+            <span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span>
+            <span v-else class="d2l-offscreen">{{ $t('lblNotExempt') }}</span>
+          </td>
         </tr>
       </tbody>
     </table>
-    <button class="d2l-button" v-if="hasMoreItems" @click="loadMore">{{ $t('btnLoadMore') }}</button>
-    <button class="d2l-button primary" @click="setExempt">{{ $t('btnExempt') }}</button>
-    <button class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
+    <button :aria-label="$t('ariaLoadMore')" :disabled="isLoading" class="d2l-button" v-if="hasMoreItems" @click="loadMore">{{ $t('btnLoadMore') }}</button>
+    <button :aria-label="$t('ariaExempt')" class="d2l-button primary" @click="setExempt">{{ $t('btnExempt') }}</button>
+    <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'activity-exemptions',
@@ -42,18 +59,65 @@ export default {
       locale: 'en'
     }
   },
+
   computed: {
-    ...mapGetters(['allUsers', 'isUserExempt', 'exemptionCount', 'allSelected', 'hasMoreItems'])
+    ...mapGetters([
+      'allUsers',
+      'isUserExempt',
+      'exemptionCount',
+      'allSelected',
+      'hasMoreItems',
+      'isLoading',
+      'canSeeOrgIdColumn',
+      'canSeeFirstName',
+      'canSeeLastName',
+      'localId'
+    ]),
+
+    ariaSelectText() {
+      return (user) => {
+        let userIdentifier = user.fullName
+
+        if( !this.canSeeFirstName && !this.canSeeLastName && this.canSeeOrgIdColumn ) {
+          userIdentifier += " " + user.OrgDefinedId
+        }
+
+        if( this.isUserExempt(user) ) {
+          return this.$t('ariaSelectExemptUser', {fullName: userIdentifier})
+        } else {
+          return this.$t('ariaSelectNotExemptUser', {fullName: userIdentifier})
+        }
+      }
+    }
   },
+
   methods: {
-    ...mapActions(['toggleSelection', 'setExempt', 'setUnexempt', 'selectAll', 'loadMore'])
+    ...mapActions([
+      'loadMore',
+      'selectAll',
+      'setExempt',
+      'setUnexempt',
+      'toggleSelection'
+    ])
   }
 }
 </script>
 
 <style scoped>
 
-#activity-exemptions {
+th > span {
+  font-weight: inherit;
+}
+
+.exemption-count {
+  display: inline-block;
+}
+
+.exemption-count::after {
+  content: ":";
+}
+
+.activity-exemptions {
   color: #565a5c;
   font-family: 'Lato', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
   padding-bottom: 50px;
@@ -77,6 +141,12 @@ thead tr:first-child {
   border-top: 1px solid #d3d9e3;
 }
 
+[dir="rtl"] th {
+  border-right: 0;
+  border-left: 1px solid #d3d9e3;
+  text-align: right;
+}
+
 th {
   border-top: 1px solid #d3d9e3;
   color: #565a5c;
@@ -88,13 +158,31 @@ th {
   vertical-align: middle;
 }
 
+[dir="rtl"] th:first-child {
+  border-top-right-radius: 0.3rem;
+  border-top-left-radius: 0;
+  border-right: 1px solid #d3d9e3;
+  border-left: 1px solid #d3d9e3;
+}
+
 th:first-child {
   border-top-left-radius: 0.3rem;
   border-left: 1px solid #d3d9e3;
 }
 
+[dir="rtl"] th:last-child {
+  border-top-left-radius: 0.3rem;
+  border-top-right-radius: 0rem;
+}
+
+
 th:last-child {
   border-top-right-radius: 0.3rem;
+}
+
+[dir="rtl"] td {
+  border-left: 1px solid #d3d9e3;
+  border-right: 0;
 }
 
 td {
@@ -103,12 +191,35 @@ td {
   padding: 1rem;
 }
 
+[dir="rtl"] td:first-child {
+  border-right: 1px solid #d3d9e3;
+  border-left: 1px solid #d3d9e3;
+}
+
 td:first-child {
   border-left: 1px solid #d3d9e3;
 }
 
 tbody > tr:last-child td {
   border-bottom: 1px solid #d3d9e3;
+}
+
+[dir="rtl"] tbody > tr:last-child td:first-child {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0.3rem;
+}
+
+tbody > tr:last-child td:first-child {
+  border-bottom-left-radius: 0.3rem;
+}
+
+[dir="rtl"] tbody > tr:last-child td:last-child {
+  border-bottom-left-radius: 0.3rem;
+  border-bottom-right-radius: 0;
+}
+
+tbody > tr:last-child td:last-child {
+  border-bottom-right-radius: 0.3rem;
 }
 
 .d2l-button.primary {
@@ -193,6 +304,14 @@ tbody > tr:last-child td {
     opacity: 0.5;
   }
 
+  .d2l-offscreen {
+    word-wrap: normal !important;
+    position: absolute !important;
+    left: -10000px;
+    overflow: hidden;
+    width: 1px;
+    height: 1px;
+  }
   /* Firefox only, fixed in Firefox 54 */
   /* https://bugzilla.mozilla.org/show_bug.cgi?id=605985 */
   @-moz-document url-prefix() {
