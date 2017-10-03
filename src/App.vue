@@ -1,5 +1,5 @@
 <template>
-  <div id="activity-exemptions">
+  <div :id="localId" class="activity-exemptions">
     <button :aria-label="$t('ariaExempt')" class="d2l-button primary" @click="setExempt">
       {{ $t('btnExempt') }}
     </button>
@@ -70,7 +70,8 @@ export default {
       'isLoading',
       'canSeeOrgIdColumn',
       'canSeeFirstName',
-      'canSeeLastName'
+      'canSeeLastName',
+      'localId'
     ]),
 
     ariaSelectText() {
@@ -106,7 +107,7 @@ th > span {
   content: ":";
 }
 
-#activity-exemptions {
+.activity-exemptions {
   color: #565a5c;
   font-family: 'Lato', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
   padding-bottom: 50px;

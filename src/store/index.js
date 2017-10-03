@@ -17,7 +17,8 @@ export function createStore(toast, updateExemptionCount) {
 			classlistURL: '',
 			exemptionsURL: '',
 			exemptionUpdateURL: '',
-			isLoading: true
+			isLoading: true,
+			localId: ''
 		},
 		getters,
 		mutations,

@@ -51,6 +51,10 @@ export const mutations = {
 
 	[types.SET_TOKEN] (state, token) {
 		state.token = token
+	},
+
+	[types.SET_LOCAL_ID] (state, localId) {
+		state.localId = localId
 	}
 }
 

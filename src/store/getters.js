@@ -38,6 +38,10 @@ export const getters = {
 
 	canSeeLastName({users}) {
 		return users.some( u => u.LastName != null )
+	},
+
+	localId({localId}) {
+		return localId
 	}
 }
 
