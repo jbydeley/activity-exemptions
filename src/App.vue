@@ -75,9 +75,17 @@ export default {
     ]),
 
     ariaSelectText() {
-      return (user) => this.isUserExempt(user)
-        ? this.$t('ariaSelectExemptUser', {fullName: user.fullName})
-        : this.$t('ariaSelectNotExemptUser', {fullName: user.fullName})
+      return (user) => {
+        let userIdentifier = user.fullName
+
+        if( !this.canSeeFirstName && !this.canSeeLastName && this.canSeeOrgIdColumn ) {
+          userIdentifier += " " + user.OrgDefinedId
+        }
+
+        return this.isUserExempt(user) 
+        ? this.$t('ariaSelectExemptUser', {fullName: userIdentifier})
+        : this.$t('ariaSelectNotExemptUser', {fullName: userIdentifier})
+      }
     }
   },
 
