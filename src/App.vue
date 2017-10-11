@@ -46,6 +46,8 @@
     <button :aria-label="$t('ariaLoadMore')" :disabled="isLoading" class="d2l-button" v-if="hasMoreItems" @click="loadMore">{{ $t('btnLoadMore') }}</button>
     <button :aria-label="$t('ariaExempt')" class="d2l-button primary" @click="setExempt">{{ $t('btnExempt') }}</button>
     <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
+
+    <div v-if="isLoading" class="loading d2l-partial-render-shimbg2"></div>
   </div>
 </template>
 
@@ -102,6 +104,16 @@ export default {
 </script>
 
 <style scoped>
+
+.loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999999;
+  background-color: rgba(0,0,0,0.15);
+}
 
 th > span {
   font-weight: inherit;

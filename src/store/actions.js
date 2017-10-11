@@ -104,30 +104,31 @@ export const actions = {
 	 */
 	loadUsers({commit, state}) {
 		commit(types.IS_LOADING, true)
+		Promise.all([
+			axios.get(state.classlistURL)
+				.then( resp => {
+					commit( types.LOAD_USERS, resp.data.Items.map( r => {
+						r.isSelected = false
+						return r
+					}))
 
-		axios.get(state.classlistURL)
-			.then( resp => {
-				commit( types.LOAD_USERS, resp.data.Items.map( r => {
-					r.isSelected = false
-					return r
-				}))
+					commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
+				})
+				.catch( e => {
+					this.dispatch('toast', i18n.t('toastCouldNotLoad'))
+					console.log(e)
+				}),
 
-				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
-			})
-			.catch( e => {
-				this.dispatch('toast', i18n.t('toastCouldNotLoad'))
-				console.log(e)
-			})
-
-		axios.get(state.exemptionsURL)
-			.then( resp => {
-				commit( types.LOAD_EXEMPTIONS, resp.data )
-				commit( types.IS_LOADING, false )
-			})
-			.catch( e => {
-				this.dispatch('toast', i18n.t('toastCouldNotLoad'))
-				console.log(e)
-			})
+			axios.get(state.exemptionsURL)
+				.then( resp => {
+					commit( types.LOAD_EXEMPTIONS, resp.data )
+				})
+				.catch( e => {
+					this.dispatch('toast', i18n.t('toastCouldNotLoad'))
+					console.log(e)
+				})
+		])
+		.then( () => commit( types.IS_LOADING, false ))
 	},
 
 	/*
