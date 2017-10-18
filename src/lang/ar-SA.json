@@ -1,2 +1,25 @@
-{
+﻿{
+   "ariaExempt" : "إعفاء المستخدمين المحددين",
+   "ariaLoadMore" : "تحميل مستخدمين إضافيين",
+   "ariaSelectExemptUser" : "{fullName} المحدد\/المحددة معفى\/معفية",
+   "ariaSelectNotExemptUser" : "{fullName} المحدد\/المحددة غير معفى\/غير معفية",
+   "ariaSelectUnselectAll" : "تحديد \/ إلغاء تحديد الكل",
+   "ariaTableSummary" : "قائمة المستخدمين الذين يمكن تعديل حالة الإعفاء الخاصة بهم.",
+   "ariaUnexempt" : "إلغاء إعفاء المستخدمين المحددين",
+   "btnExempt" : "إعفاء",
+   "btnLoadMore" : "تحميل المزيد...",
+   "btnUnexempt" : "إلغاء الإعفاء",
+   "lblAnonymousUser" : "مستخدم مجهول",
+   "lblExempt" : "إعفاء",
+   "lblExemptStatus" : "حالة الإعفاء",
+   "lblExemptionCount" : "الإعفاءات: {exemptionCount}",
+   "lblExemptions" : "الإعفاءات",
+   "lblFirstName" : "الاسم الأول",
+   "lblLastName" : "اسم العائلة",
+   "lblNotExempt" : "غير معفى",
+   "lblOrgDefinedId" : "معرِّف المؤسسة المحدد",
+   "lblUser" : "مستخدم",
+   "toastCouldNotLoad" : "يتعذّر تحميل بيانات إعفاء النشاط",
+   "toastExempt" : "تم الحفظ بنجاح. لم يتم حفظ أي شيء | تم الحفظ بنجاح. تم إعفاء مستخدم واحد. | تم الحفظ بنجاح. تم إعفاء {count} من المستخدمين.",
+   "toastUnexempt" : "تم الحفظ بنجاح. لم يتم حفظ أي شيء | تم الحفظ بنجاح. تم إلغاء إعفاء مستخدم واحد. | تم الحفظ بنجاح. تم إلغاء إعفاء {count} من المستخدمين."
 }

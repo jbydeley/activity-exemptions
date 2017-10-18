@@ -1,2 +1,25 @@
-{
+﻿{
+   "ariaExempt" : "Geselecteerde gebruikers vrijstellen",
+   "ariaLoadMore" : "Meer gebruikers laden",
+   "ariaSelectExemptUser" : "Geselecteerde {fullName} vrijstellen",
+   "ariaSelectNotExemptUser" : "Geselecteerde {fullName} niet vrijstellen",
+   "ariaSelectUnselectAll" : "Alles selecteren\/deselecteren",
+   "ariaTableSummary" : "De lijst met gebruikers waarvan de vrijstellingsstatus kan worden gewijzigd.",
+   "ariaUnexempt" : "Vrijstelling geselecteerde gebruikers opheffen",
+   "btnExempt" : "Vrijstellen",
+   "btnLoadMore" : "Meer laden...",
+   "btnUnexempt" : "Vrijstelling opheffen",
+   "lblAnonymousUser" : "Anonieme gebruiker",
+   "lblExempt" : "Vrijstellen",
+   "lblExemptStatus" : "Vrijstellingsstatus",
+   "lblExemptionCount" : "Vrijstellingen: {exemptionCount}",
+   "lblExemptions" : "Vrijstellingen",
+   "lblFirstName" : "Voornaam",
+   "lblLastName" : "Achternaam",
+   "lblNotExempt" : "Geen vrijstelling",
+   "lblOrgDefinedId" : "Door organisatie gedefinieerde id",
+   "lblUser" : "Gebruiker",
+   "toastCouldNotLoad" : "Vrijstellingsgegevens van activiteit kunnen niet worden geladen",
+   "toastExempt" : "Opgeslagen. Niets opgeslagen | Opgeslagen. Vrijstelling voor 1 gebruiker. | Opgeslagen. Vrijstelling voor {count} gebruikers.",
+   "toastUnexempt" : "Opgeslagen. Niets opgeslagen | Opgeslagen. Vrijstelling voor 1 gebruiker opgeheven. | Opgeslagen. Vrijstelling voor {count} gebruikers opgeheven."
 }

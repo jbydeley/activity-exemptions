@@ -1,2 +1,25 @@
-{
+﻿{
+   "ariaExempt" : "免除选定用户",
+   "ariaLoadMore" : "加载其他用户",
+   "ariaSelectExemptUser" : "选定 {fullName} 已免除",
+   "ariaSelectNotExemptUser" : "选定 {fullName} 未免除",
+   "ariaSelectUnselectAll" : "全选 \/ 取消全选",
+   "ariaTableSummary" : "可修改免除状态的用户列表。",
+   "ariaUnexempt" : "取消免除所选用户",
+   "btnExempt" : "免除",
+   "btnLoadMore" : "加载更多...",
+   "btnUnexempt" : "取消免除",
+   "lblAnonymousUser" : "匿名用户",
+   "lblExempt" : "免除",
+   "lblExemptStatus" : "免除状态",
+   "lblExemptionCount" : "免除：{exemptionCount}",
+   "lblExemptions" : "免除",
+   "lblFirstName" : "名字",
+   "lblLastName" : "姓氏",
+   "lblNotExempt" : "未免除",
+   "lblOrgDefinedId" : "组织定义 ID",
+   "lblUser" : "用户",
+   "toastCouldNotLoad" : "无法加载活动免除数据",
+   "toastExempt" : "已成功保存。未保存任何内容 | 已成功保存。1 名用户已免除。 | 已成功保存。{count} 名用户已免除。",
+   "toastUnexempt" : "已成功保存。未保存任何内容 | 已成功保存。1 名用户已取消免除。 | 已成功保存。{count} 名用户已取消免除。"
 }

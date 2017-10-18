@@ -1,2 +1,25 @@
-{
+﻿{
+   "ariaExempt" : "Isentar usuários selecionados",
+   "ariaLoadMore" : "Carregar usuários adicionais",
+   "ariaSelectExemptUser" : "Selecionar {fullName} isento",
+   "ariaSelectNotExemptUser" : "Selecionar {fullName} não isento",
+   "ariaSelectUnselectAll" : "Marcar\/Desmarcar tudo",
+   "ariaTableSummary" : "A lista de usuários cujo status de isenção pode ser modificado.",
+   "ariaUnexempt" : "Usuários não isentos selecionados",
+   "btnExempt" : "Isento",
+   "btnLoadMore" : "Carregar Mais...",
+   "btnUnexempt" : "Não isento",
+   "lblAnonymousUser" : "Usuário Anônimo",
+   "lblExempt" : "Isento",
+   "lblExemptStatus" : "Status de Isento",
+   "lblExemptionCount" : "Isenções: {exemptionCount}",
+   "lblExemptions" : "Isenções",
+   "lblFirstName" : "Nome",
+   "lblLastName" : "Sobrenome",
+   "lblNotExempt" : "Não Isento",
+   "lblOrgDefinedId" : "ID Definido da Organização",
+   "lblUser" : "Usuário",
+   "toastCouldNotLoad" : "Não foi possível carregar dados de isenção da atividade",
+   "toastExempt" : "Salvo com sucesso. Nada foi salvo | Salvo com sucesso. 1 usuário isento. | Salvo com sucesso. {count} usuários isentos.",
+   "toastUnexempt" : "Salvo com sucesso. Nada foi salvo | Salvo com sucesso. 1 usuário não isento. | Salvo com sucesso. {count} usuários não isentos."
 }

@@ -1,2 +1,25 @@
-{
+﻿{
+   "ariaExempt" : "Ta bort valda användare",
+   "ariaLoadMore" : "Läs in fler användare",
+   "ariaSelectExemptUser" : "{fullName} undantagen",
+   "ariaSelectNotExemptUser" : "{fullName} inte undantagen",
+   "ariaSelectUnselectAll" : "Markera\/avmarkera alla",
+   "ariaTableSummary" : "Listan över användare vars undantagsstatus kan ändras.",
+   "ariaUnexempt" : "Lägg till valda användare",
+   "btnExempt" : "Undantagen",
+   "btnLoadMore" : "Ladda mer ...",
+   "btnUnexempt" : "Inte undantagen",
+   "lblAnonymousUser" : "Anonym användare",
+   "lblExempt" : "Undantagen",
+   "lblExemptStatus" : "Undantagsstatus",
+   "lblExemptionCount" : "Undantag: {exemptionCount}",
+   "lblExemptions" : "Undantag",
+   "lblFirstName" : "Förnamn",
+   "lblLastName" : "Efternamn",
+   "lblNotExempt" : "Inte undantagen",
+   "lblOrgDefinedId" : "Organisationsdefinierat ID",
+   "lblUser" : "Användare",
+   "toastCouldNotLoad" : "Det gick inte att läsa in undantagsdata för aktiviteten",
+   "toastExempt" : "Har sparats. Inget sparades | Har sparats. 1 användare undantas. | Har sparats. {Count} användare undantas.",
+   "toastUnexempt" : "Har sparats. Inget sparades | Har sparats. 1 användare undantas inte. | Har sparats. {Count} användare undantas inte."
 }

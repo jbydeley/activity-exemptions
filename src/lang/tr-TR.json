@@ -1,2 +1,25 @@
-{
+﻿{
+   "ariaExempt" : "Seçili kullanıcıları muaf tut",
+   "ariaLoadMore" : "Daha fazla kullanıcı yükle",
+   "ariaSelectExemptUser" : "Seçili olan {fullName} muaftır",
+   "ariaSelectNotExemptUser" : "Seçili olan {fullName} muaf değildir",
+   "ariaSelectUnselectAll" : "Seç \/ Seçimi Kaldır",
+   "ariaTableSummary" : "Muafiyet durumunu değiştirebilecek kullanıcıların listesi.",
+   "ariaUnexempt" : "Seçili kullanıcıların muafiyetini kaldır",
+   "btnExempt" : "Muaf Tut",
+   "btnLoadMore" : "Daha Fazla Yükle...",
+   "btnUnexempt" : "Muafiyetini Kaldır",
+   "lblAnonymousUser" : "Anonim Kullanıcı",
+   "lblExempt" : "Muaf Tut",
+   "lblExemptStatus" : "Muafiyet Durumu",
+   "lblExemptionCount" : "Muafiyetler: {exemptionCount}",
+   "lblExemptions" : "Muafiyetler",
+   "lblFirstName" : "Adı",
+   "lblLastName" : "Soyadı",
+   "lblNotExempt" : "Muaf Değil",
+   "lblOrgDefinedId" : "Org Tanımlı Kimlik",
+   "lblUser" : "Kullanıcı",
+   "toastCouldNotLoad" : "Etkinlik muafiyeti verileri yüklenemedi",
+   "toastExempt" : "Başarıyla kaydedildi. Hiçbir şey kaydedilmedi | Başarıyla kaydedildi. 1 kullanıcı muaf tutuldu. | Başarıyla kaydedildi. {Count} kullanıcı muaf tutuldu.",
+   "toastUnexempt" : "Başarıyla kaydedildi. Hiçbir şey kaydedilmedi | Başarıyla kaydedildi. 1 kullanıcının muafiyeti kaldırıldı. | Başarıyla kaydedildi. {Count} kullanıcının muafiyeti kaldırıldı."
 }

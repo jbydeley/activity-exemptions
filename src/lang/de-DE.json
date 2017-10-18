@@ -1,2 +1,25 @@
-{
+﻿{
+   "ariaExempt" : "Ausgewählte Benutzer ausnehmen",
+   "ariaLoadMore" : "Zusätzliche Nutzer laden",
+   "ariaSelectExemptUser" : "{fullName} als Ausnahme auswählen",
+   "ariaSelectNotExemptUser" : "{fullName} als Ausnahme abwählen",
+   "ariaSelectUnselectAll" : "Alle\/keine auswählen",
+   "ariaTableSummary" : "Die Liste der Benutzer, deren Ausnahmestatus geändert werden kann.",
+   "ariaUnexempt" : "Ausgewählte Benutzer als Ausnahme abwählen",
+   "btnExempt" : "Ausgenommen",
+   "btnLoadMore" : "Weitere laden...",
+   "btnUnexempt" : "Nicht ausgenommen",
+   "lblAnonymousUser" : "Anonymer Benutzer",
+   "lblExempt" : "Ausgenommen",
+   "lblExemptStatus" : "Ausnahmestatus",
+   "lblExemptionCount" : "Ausnahmen: {exemptionCount}",
+   "lblExemptions" : "Ausnahmen",
+   "lblFirstName" : "Vorname",
+   "lblLastName" : "Nachname",
+   "lblNotExempt" : "Nicht ausgenommen",
+   "lblOrgDefinedId" : "Organisationsspezifische ID",
+   "lblUser" : "Benutzer",
+   "toastCouldNotLoad" : "Es konnten keine Aktivitäts-Ausnahmedaten geladen werden.",
+   "toastExempt" : "Gespeichert. Nichts gespeichert | Gespeichert. 1 Benutzer ausgenommen. | Gespeichert. {count} Benutzer ausgenommen.",
+   "toastUnexempt" : "Gespeichert. Nichts gespeichert | Gespeichert. 1 Benutzer nicht ausgenommen. | Gespeichert. {count} Benutzer nicht ausgenommen."
 }
