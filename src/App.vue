@@ -56,10 +56,13 @@ import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'activity-exemptions',
-  data() {
-    return {
-      locale: 'en'
-    }
+
+  created() {
+    const locale = document.documentElement.lang
+      || document.documentElement.getAttribute('data-lang-default')
+      || 'en'
+
+    this.$i18n.locale = locale.toLowerCase()
   },
 
   computed: {
@@ -292,7 +295,7 @@ tbody > tr:last-child td:last-child {
   .d2l-checkbox:checked {
     background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23565A5C%22%20d%3D%22M8.4%2016.6c.6.6%201.5.6%202.1%200l8-8c.6-.6.6-1.5%200-2.1-.6-.6-1.5-.6-2.1%200l-6.9%207-1.9-1.9c-.6-.6-1.5-.6-2.1%200-.6.6-.6%201.5%200%202.1l2.9%202.9z%22/%3E%3C/svg%3E%0A");
   }
-  
+
   .d2l-checkbox,
   .d2l-checkbox:hover:disabled {
     background-color: #f9fafb;
