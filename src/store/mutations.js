@@ -55,7 +55,16 @@ export const mutations = {
 
 	[types.SET_LOCAL_ID] (state, localId) {
 		state.localId = localId
+	},
+
+	[types.SET_QUERY_TERM] (state, queryTerm) {
+		state.queryTerm = queryTerm
+	},
+
+	[types.SET_SHOW_CLEAR_BUTTON] (state, showClearButton) {
+		state.showClearButton = showClearButton
 	}
+
 }
 
 function handleIsExempt(userId, state) {

@@ -42,6 +42,10 @@ export const getters = {
 
 	localId({localId}) {
 		return localId
+	},
+
+	showClearButton({showClearButton}) {
+		return showClearButton
 	}
 }
 

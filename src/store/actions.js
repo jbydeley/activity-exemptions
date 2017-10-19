@@ -75,6 +75,54 @@ export const actions = {
 	},
 
 	/*
+	 * searchUsers( context )
+	 *
+	 * searchUsers calls prepares the search against the classlist api
+	 * with a query parameter for loadUsers.
+	 */
+	searchUsers({commit, state}, searchBy) {
+		// Check null searchBy
+		if( !searchBy || !/\S/.test(searchBy) ) {
+			// If there is already a resulted list of students
+			if( state.queryTerm ) {
+				this.dispatch('clearResults')
+			} else {
+				return
+			}
+		} else {			
+			// Check if its the same term
+			if( searchBy === state.queryTerm) {
+				// Don't need to do anything if its the same term
+				return
+			}
+			commit(types.SET_SHOW_CLEAR_BUTTON, true)
+			
+			// New search term clear users
+			commit(types.LOAD_USERS, [])
+			// Set new term for queryTerm
+			commit(types.SET_QUERY_TERM, searchBy)
+			// Reset paging info
+			commit(types.LOAD_PAGINGINFO, {})
+			// Call loadUsers to load first page
+			this.dispatch('loadUsers')
+		}
+	},
+
+	/*
+	 * clearResults( context )
+	 *
+	 * clearResults clears the search box and results reloads the original load
+	 */
+	clearResults({commit, state}) {
+		commit(types.SET_SHOW_CLEAR_BUTTON, '')
+		// Clear search term
+		commit(types.SET_QUERY_TERM, '')
+		// Load original list
+		commit(types.LOAD_USERS, [])
+		this.dispatch('loadUsers')
+	},
+
+	/*
 	 * toggleSelection( context, user )
 	 *
 	 * toggleSelection will set the isSelect for the user
@@ -105,19 +153,19 @@ export const actions = {
 	loadUsers({commit, state}) {
 		commit(types.IS_LOADING, true)
 		Promise.all([
-			axios.get(state.classlistURL)
+			axios.get(`${state.classlistURL}?onlyShowShownInGrades=true&searchTerm=${state.queryTerm}`)
 				.then( resp => {
 					commit( types.LOAD_USERS, resp.data.Items.map( r => {
 						r.isSelected = false
 						return r
-					}))
+				}))
 
-					commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
-				})
-				.catch( e => {
-					this.dispatch('toast', i18n.t('toastCouldNotLoad'))
-					console.log(e)
-				}),
+				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
+			})
+			.catch( e => {
+				this.dispatch('toast', i18n.t('toastCouldNotLoad'))
+				console.log(e)
+			}),
 
 			axios.get(state.exemptionsURL)
 				.then( resp => {
@@ -139,7 +187,7 @@ export const actions = {
 	 */
 	loadMore({commit, state}) {
 		commit(types.IS_LOADING, true)
-		axios.get(`${state.classlistURL}?bookmark=${state.bookmark}`)
+		axios.get(`${state.classlistURL}?onlyShowShownInGrades=true&bookmark=${state.bookmark}&searchTerm=${state.queryTerm}`)
 			.then( resp => {
 				commit( types.LOAD_MORE_USERS, resp.data.Items.map( r => {
 					r.isSelected = false

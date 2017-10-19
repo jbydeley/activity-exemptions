@@ -10,3 +10,6 @@ export const LOAD_PAGINGINFO = 'LOAD_PAGINGINFO'
 export const IS_LOADING = 'IS_LOADING'
 export const SET_TOKEN = 'SET_TOKEN'
 export const SET_LOCAL_ID = 'SET_LOCAL_ID'
+export const SET_QUERY_TERM = 'SET_QUERY_TERM'
+export const SET_SHOW_CLEAR_BUTTON = 'SET_SHOW_CLEAR_BUTTON'
+
