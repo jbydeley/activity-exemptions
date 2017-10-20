@@ -44,8 +44,8 @@ export const getters = {
 		return localId
 	},
 
-	showClearButton({showClearButton}) {
-		return showClearButton
+	showClearButton({queryTerm}) {
+		return queryTerm ? true: false
 	}
 }
 

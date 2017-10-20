@@ -12,14 +12,28 @@ function d2lAxios(token) {
 		}
 	})
 }
+function getClasslistParams(searchTerm, bookmark){
+
+	let params = {
+		onlyShowShownInGrades: true
+	}
+
+	if (searchTerm){
+		params.searchTerm = searchTerm
+	}
+	if (bookmark){
+		params.bookmark = bookmark
+	}
+	return { params };
+}
 
 /*
  * actions
  *
  * See: https://vuex.vuejs.org/en/actions.html
- * Actions are similar to mutations but are allowed to execute arbitrary asynchronise
+ * Actions are similar to mutations but are allowed to execute arbitrary asynchronous
  * operations. Instead of directly mutating state, they call mutations after the
- * asynchronise operations are complete
+ * asynchronous operations are complete
  */
 export const actions = {
 	/*
@@ -150,10 +164,12 @@ export const actions = {
 	 * and exemption list. While loading, state.isLoading will be set
 	 * to true
 	 */
+
 	loadUsers({commit, state}) {
 		commit(types.IS_LOADING, true)
+
 		Promise.all([
-			axios.get(`${state.classlistURL}?onlyShowShownInGrades=true&searchTerm=${state.queryTerm}`)
+			axios.get(state.classlistURL, getClasslistParams(state.queryTerm))
 				.then( resp => {
 					commit( types.LOAD_USERS, resp.data.Items.map( r => {
 						r.isSelected = false
@@ -187,7 +203,8 @@ export const actions = {
 	 */
 	loadMore({commit, state}) {
 		commit(types.IS_LOADING, true)
-		axios.get(`${state.classlistURL}?onlyShowShownInGrades=true&bookmark=${state.bookmark}&searchTerm=${state.queryTerm}`)
+
+		axios.get(state.classlistURL, getClasslistParams(state.queryTerm, state.bookmark))
 			.then( resp => {
 				commit( types.LOAD_MORE_USERS, resp.data.Items.map( r => {
 					r.isSelected = false

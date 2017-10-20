@@ -59,10 +59,6 @@ export const mutations = {
 
 	[types.SET_QUERY_TERM] (state, queryTerm) {
 		state.queryTerm = queryTerm
-	},
-
-	[types.SET_SHOW_CLEAR_BUTTON] (state, showClearButton) {
-		state.showClearButton = showClearButton
 	}
 
 }
