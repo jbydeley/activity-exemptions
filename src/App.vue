@@ -5,15 +5,17 @@
     </button>
     <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
     <div class="vui-input-search-container">
-      <input
+    <input
         v-model="searchBy"
         type="search"
         maxlength="60"
         :placeholder="$t('lblSearchPlaceholder')"
+        @keyup.enter.prevent.stop="searchUsers(searchBy)"
+        ref="searchInput"
         spellcheck="false"
         autocomplete="off">
-
-      <button :aria-label="$t('ariaSearchButton')" class="vui-input-search-button" @click="searchUsers(searchBy)"></button>
+      <button v-if="showSearchButton(searchBy)" :aria-label="$t('ariaSearchButton')" class="vui-input-search-button" @click="searchUsers(searchBy)"></button>
+      <button v-else :aria-label="$t('btnClearSearch')" class="vui-input-search-clear-button" @click="clearResults"></button>
     </div>
 
     <div class="exemptions-count-container">
@@ -44,7 +46,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in allUsers">
+        <tr v-for="user in allUsers" :key="user.Identifier">
           <td>
             <input :aria-label="ariaSelectText(user)" type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
           </td>
@@ -122,6 +124,7 @@ export default {
       'canSeeLastName',
       'localId',
       'showClearButton',
+      'showSearchButton',
       'hasUsers',
       'showEmptySearch',
       'showNoUsers',
@@ -146,7 +149,6 @@ export default {
   methods: {
     ...mapActions([
       'loadMore',
-      'searchUsers',
       'selectAll',
       'setExempt',
       'setUnexempt',
@@ -155,6 +157,11 @@ export default {
     clearResults() {
       this.searchBy = ''
       this.$store.dispatch('clearResults')
+      this.$refs.searchInput.focus()
+    },
+    searchUsers(searchBy) {
+      this.$store.dispatch('searchUsers', searchBy )
+      this.$refs.searchInput.focus()
     }
   }
 }

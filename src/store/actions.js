@@ -109,7 +109,6 @@ export const actions = {
 				// Don't need to do anything if its the same term
 				return
 			}
-
 			// New search term clear users
 			commit(types.LOAD_USERS, [])
 			// Set new term for queryTerm

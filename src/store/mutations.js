@@ -60,7 +60,6 @@ export const mutations = {
 	[types.SET_QUERY_TERM] (state, queryTerm) {
 		state.queryTerm = queryTerm
 	}
-
 }
 
 function handleIsExempt(userId, state) {

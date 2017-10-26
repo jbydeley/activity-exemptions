@@ -44,8 +44,16 @@ export const getters = {
 		return localId
 	},
 
+	queryTerm({queryTerm}) {
+		return queryTerm
+	},
+
 	showClearButton({queryTerm}) {
-		return queryTerm ? true: false
+		return queryTerm
+	},
+
+	showSearchButton({queryTerm}) {
+		return searchBy => !queryTerm || queryTerm !== searchBy
 	},
 
 	hasUsers({users}) {
@@ -58,10 +66,6 @@ export const getters = {
 
 	showEmptySearch({users, queryTerm}) {
 		return users.length === 0 && queryTerm
-	},
-
-	queryTerm({queryTerm}) {
-		return queryTerm
 	}
 }
 
