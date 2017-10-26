@@ -18,6 +18,8 @@
 	"lblExemptStatus": "Exempt Status",
 	"lblOrgDefinedId": "Org Defined Id",
 	"lblSearchPlaceholder": "Search For…",
+	"lblNoResultsFound": "No results found for <strong>{queryTerm}</strong>.",
+	"lblNoUsers": "No users found. You may not have Classlist permission or no users have the role property of 'Can be graded in grades'.",
 	"btnClearSearch": "Clear Search",
 	"btnExempt": "Exempt",
 	"btnUnexempt": "Unexempt",

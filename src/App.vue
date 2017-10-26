@@ -5,19 +5,25 @@
     </button>
     <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
     <div class="vui-input-search-container">
-      <input v-model="searchBy" @keyup.enter.prevent.stop="searchUsers(searchBy)" type="search" maxlength="60" :placeholder="$t('lblSearchPlaceholder')" spellcheck="false" autocomplete="off">
+      <input
+        v-model="searchBy"
+        type="search"
+        maxlength="60"
+        :placeholder="$t('lblSearchPlaceholder')"
+        spellcheck="false"
+        autocomplete="off">
+
       <button :aria-label="$t('ariaSearchButton')" class="vui-input-search-button" @click="searchUsers(searchBy)"></button>
     </div>
 
     <div class="exemptions-count-container">
-      <span class="exemption-count">{{ $t('lblExemptions') }}</span>
-      {{ exemptionCount }}
+      <span class="exemption-count" v-if="!showNoUsers">{{ $t('lblExemptionCount', { exemptionCount }) }}</span>
       <div class="clear-results-container">
         <button v-if="showClearButton" class="clear-results-button" @click="clearResults">{{ $t('btnClearSearch') }}</button>
       </div>
     </div>
 
-    <table :summary="$t('ariaTableSummary')">
+    <table :summary="$t('ariaTableSummary')" v-if="hasUsers">
       <thead>
         <tr>
           <th>
@@ -51,9 +57,34 @@
         </tr>
       </tbody>
     </table>
-    <button :aria-label="$t('ariaLoadMore')" :disabled="isLoading" class="d2l-button" v-if="hasMoreItems" @click="loadMore">{{ $t('btnLoadMore') }}</button>
-    <button :aria-label="$t('ariaExempt')" class="d2l-button primary" @click="setExempt">{{ $t('btnExempt') }}</button>
-    <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
+
+    <div class="no-results" v-if="showEmptySearch" v-html="$t('lblNoResultsFound', {queryTerm})"></div>
+    <div class="no-results" v-else-if="showNoUsers" v-html="$t('lblNoUsers')"></div>
+
+    <button
+      :aria-label="$t('ariaLoadMore')"
+      :disabled="isLoading"
+      class="d2l-button"
+      v-if="hasMoreItems"
+      @click="loadMore">
+      {{ $t('btnLoadMore') }}
+    </button>
+
+    <button
+      :aria-label="$t('ariaExempt')"
+      class="d2l-button primary"
+      v-if="hasUsers"
+      @click="setExempt">
+      {{ $t('btnExempt') }}
+    </button>
+
+    <button
+      :aria-label="$t('ariaUnexempt')"
+      class="d2l-button"
+      v-if="hasUsers"
+      @click="setUnexempt">
+      {{ $t('btnUnexempt') }}
+    </button>
 
     <div v-if="isLoading" class="loading d2l-partial-render-shimbg2"></div>
   </div>
@@ -90,7 +121,11 @@ export default {
       'canSeeFirstName',
       'canSeeLastName',
       'localId',
-      'showClearButton'
+      'showClearButton',
+      'hasUsers',
+      'showEmptySearch',
+      'showNoUsers',
+      'queryTerm'
     ]),
 
     ariaSelectText() {

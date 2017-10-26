@@ -1,4 +1,6 @@
-
+.no-results {
+  margin: 21px 0;
+}
 
 .loading {
   position: absolute;
@@ -12,14 +14,6 @@
 
 th > span {
   font-weight: inherit;
-}
-
-.exemption-count {
-  display: inline-block;
-}
-
-.exemption-count::after {
-  content: ":";
 }
 
 .activity-exemptions {

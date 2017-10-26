@@ -46,6 +46,22 @@ export const getters = {
 
 	showClearButton({queryTerm}) {
 		return queryTerm ? true: false
+	},
+
+	hasUsers({users}) {
+		return users.length > 0
+	},
+
+	showNoUsers({users, queryTerm}) {
+		return users.length === 0 && !queryTerm
+	},
+
+	showEmptySearch({users, queryTerm}) {
+		return users.length === 0 && queryTerm
+	},
+
+	queryTerm({queryTerm}) {
+		return queryTerm
 	}
 }
 

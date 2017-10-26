@@ -109,8 +109,7 @@ export const actions = {
 				// Don't need to do anything if its the same term
 				return
 			}
-			commit(types.SET_SHOW_CLEAR_BUTTON, true)
-			
+
 			// New search term clear users
 			commit(types.LOAD_USERS, [])
 			// Set new term for queryTerm
@@ -128,7 +127,6 @@ export const actions = {
 	 * clearResults clears the search box and results reloads the original load
 	 */
 	clearResults({commit, state}) {
-		commit(types.SET_SHOW_CLEAR_BUTTON, '')
 		// Clear search term
 		commit(types.SET_QUERY_TERM, '')
 		// Load original list
