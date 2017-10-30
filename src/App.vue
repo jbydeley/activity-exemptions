@@ -5,17 +5,24 @@
     </button>
     <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
     <div class="vui-input-search-container">
-    <input
-        v-model="searchBy"
-        type="search"
-        maxlength="60"
-        :placeholder="$t('lblSearchPlaceholder')"
-        @keyup.enter.prevent.stop="searchUsers(searchBy)"
-        ref="searchInput"
-        spellcheck="false"
-        autocomplete="off">
-      <button v-if="showSearchButton(searchBy)" :aria-label="$t('ariaSearchButton')" class="vui-input-search-button" @click="searchUsers(searchBy)"></button>
-      <button v-else :aria-label="$t('btnClearSearch')" class="vui-input-search-clear-button" @click="clearResults"></button>
+      <!--
+      This innocent looking form is needed because Release Conditions contains
+      a form element that traps the enter key forcing the Release Condition
+      creation dialog to appear when the user presses enter.
+      -->
+      <form @keydown.enter.prevent>
+        <input
+          v-model="searchBy"
+          type="search"
+          maxlength="60"
+          :placeholder="$t('lblSearchPlaceholder')"
+          @keyup.enter.prevent.stop="searchUsers(searchBy)"
+          ref="searchInput"
+          spellcheck="false"
+          autocomplete="off">
+        <button v-if="showSearchButton(searchBy)" :aria-label="$t('ariaSearchButton')" class="vui-input-search-button" @click="searchUsers(searchBy)"></button>
+        <button v-else :aria-label="$t('btnClearSearch')" class="vui-input-search-clear-button" @click="clearResults"></button>
+      </form>
     </div>
 
     <div class="exemptions-count-container">
