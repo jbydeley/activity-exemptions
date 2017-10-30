@@ -1,203 +1,177 @@
 <template>
-  <div id="activity-exemptions">
-    <button class="d2l-button primary" @click="setExempt">{{ $t('btnExempt') }}</button>
-    <button class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
+  <div :id="localId" class="activity-exemptions">
+    <button :aria-label="$t('ariaExempt')" class="d2l-button primary" @click="setExempt">
+      {{ $t('btnExempt') }}
+    </button>
+    <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
+    <div class="vui-input-search-container">
+      <!--
+      This innocent looking form is needed because Release Conditions contains
+      a form element that traps the enter key forcing the Release Condition
+      creation dialog to appear when the user presses enter.
+      -->
+      <form @keydown.enter.prevent>
+        <input
+          v-model="searchBy"
+          type="search"
+          maxlength="60"
+          :placeholder="$t('lblSearchPlaceholder')"
+          @keyup.enter.prevent.stop="searchUsers(searchBy)"
+          ref="searchInput"
+          spellcheck="false"
+          autocomplete="off">
+        <button v-if="showSearchButton(searchBy)" :aria-label="$t('ariaSearchButton')" class="vui-input-search-button" @click="searchUsers(searchBy)"></button>
+        <button v-else :aria-label="$t('btnClearSearch')" class="vui-input-search-clear-button" @click="clearResults"></button>
+      </form>
+    </div>
 
-    <p>
-      {{ $t('lblExemptionCount', {exemptionCount}) }}
-    </p>
-    <table>
+    <div class="exemptions-count-container">
+      <span class="exemption-count" v-if="!showNoUsers">{{ $t('lblExemptionCount', { exemptionCount }) }}</span>
+      <div class="clear-results-container">
+        <button v-if="showClearButton" class="clear-results-button" @click="clearResults">{{ $t('btnClearSearch') }}</button>
+      </div>
+    </div>
+
+    <table :summary="$t('ariaTableSummary')" v-if="hasUsers">
       <thead>
         <tr>
           <th>
-            <input type="checkbox" class="d2l-checkbox" :checked="allSelected" @change="selectAll">
+            <input :aria-label="$t('ariaSelectUnselectAll')" type="checkbox" class="d2l-checkbox" :checked="allSelected" @change="selectAll">
           </th>
-          <th>{{ $t('lblLastFirstName') }}</th>
+          <!--
+          To support both User Information Privacy and RTL, we need to conditionally
+          render one of four options. If the API changes in the future to support
+          preferred names, this could be reduced or eliminated entirely.
+           -->
+          <th>
+            <span v-if="canSeeFirstName">{{ $t('lblFirstName') }}</span>
+            <span v-if="canSeeLastName">{{ $t('lblLastName') }}</span>
+            <span v-if="!canSeeFirstName && !canSeeLastName">{{ $t('lblUser') }}</span>
+          </th>
+          <th v-if="canSeeOrgIdColumn">{{ $t('lblOrgDefinedId') }}</th>
           <th>{{ $t('lblExemptStatus') }}</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in allUsers">
+        <tr v-for="user in allUsers" :key="user.Identifier">
           <td>
-            <input type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
+            <input :aria-label="ariaSelectText(user)" type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
           </td>
           <td>{{user.fullName}}</td>
-          <td><span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span></td>
+          <td v-if="canSeeOrgIdColumn">{{user.OrgDefinedId}}</td>
+          <td>
+            <span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span>
+            <span v-else class="d2l-offscreen">{{ $t('lblNotExempt') }}</span>
+          </td>
         </tr>
       </tbody>
     </table>
-    <button class="d2l-button" v-if="hasMoreItems" @click="loadMore">{{ $t('btnLoadMore') }}</button>
-    <button class="d2l-button primary" @click="setExempt">{{ $t('btnExempt') }}</button>
-    <button class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
+
+    <div class="no-results" v-if="showEmptySearch" v-html="$t('lblNoResultsFound', {queryTerm})"></div>
+    <div class="no-results" v-else-if="showNoUsers" v-html="$t('lblNoUsers')"></div>
+
+    <button
+      :aria-label="$t('ariaLoadMore')"
+      :disabled="isLoading"
+      class="d2l-button"
+      v-if="hasMoreItems"
+      @click="loadMore">
+      {{ $t('btnLoadMore') }}
+    </button>
+
+    <button
+      :aria-label="$t('ariaExempt')"
+      class="d2l-button primary"
+      v-if="hasUsers"
+      @click="setExempt">
+      {{ $t('btnExempt') }}
+    </button>
+
+    <button
+      :aria-label="$t('ariaUnexempt')"
+      class="d2l-button"
+      v-if="hasUsers"
+      @click="setUnexempt">
+      {{ $t('btnUnexempt') }}
+    </button>
+
+    <div v-if="isLoading" class="loading d2l-partial-render-shimbg2"></div>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'activity-exemptions',
   data() {
     return {
-      locale: 'en'
+      searchBy: ''
     }
   },
-  computed: {
-    ...mapGetters(['allUsers', 'isUserExempt', 'exemptionCount', 'allSelected', 'hasMoreItems'])
+
+  created() {
+    const locale = document.documentElement.lang
+      || document.documentElement.getAttribute('data-lang-default')
+      || 'en'
+
+    this.$i18n.locale = locale.toLowerCase()
   },
+
+  computed: {
+    ...mapGetters([
+      'allUsers',
+      'isUserExempt',
+      'exemptionCount',
+      'allSelected',
+      'hasMoreItems',
+      'isLoading',
+      'canSeeOrgIdColumn',
+      'canSeeFirstName',
+      'canSeeLastName',
+      'localId',
+      'showClearButton',
+      'showSearchButton',
+      'hasUsers',
+      'showEmptySearch',
+      'showNoUsers',
+      'queryTerm'
+    ]),
+
+    ariaSelectText() {
+      return (user) => {
+        let userIdentifier = user.fullName
+
+        if( !this.canSeeFirstName && !this.canSeeLastName && this.canSeeOrgIdColumn ) {
+          userIdentifier += " " + user.OrgDefinedId
+        }
+
+        return this.isUserExempt(user) 
+        ? this.$t('ariaSelectExemptUser', {fullName: userIdentifier})
+        : this.$t('ariaSelectNotExemptUser', {fullName: userIdentifier})
+      }
+    }
+  },
+
   methods: {
-    ...mapActions(['toggleSelection', 'setExempt', 'setUnexempt', 'selectAll', 'loadMore'])
+    ...mapActions([
+      'loadMore',
+      'selectAll',
+      'setExempt',
+      'setUnexempt',
+      'toggleSelection'
+    ]),
+    clearResults() {
+      this.searchBy = ''
+      this.$store.dispatch('clearResults')
+      this.$refs.searchInput.focus()
+    },
+    searchUsers(searchBy) {
+      this.$store.dispatch('searchUsers', searchBy )
+      this.$refs.searchInput.focus()
+    }
   }
 }
 </script>
 
-<style scoped>
-
-#activity-exemptions {
-  color: #565a5c;
-  font-family: 'Lato', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
-  padding-bottom: 50px;
-}
-
-table {
-  background-color: transparent;
-  border-collapse: separate !important;
-  border-spacing: 0;
-  display: table;
-  font-size: 0.8rem;
-  font-weight: 400;
-  width: 100%;
-}
-
-thead {
-  display: table-header-group;
-}
-
-thead tr:first-child {
-  border-top: 1px solid #d3d9e3;
-}
-
-th {
-  border-top: 1px solid #d3d9e3;
-  color: #565a5c;
-  background-color: #f9fafb;
-  margin: 1rem 0;
-  border-right: 1px solid #d3d9e3;
-  padding: 1rem;
-  text-align: left;
-  vertical-align: middle;
-}
-
-th:first-child {
-  border-top-left-radius: 0.3rem;
-  border-left: 1px solid #d3d9e3;
-}
-
-th:last-child {
-  border-top-right-radius: 0.3rem;
-}
-
-td {
-  border-top: 1px solid #d3d9e3;  
-  border-right: 1px solid #d3d9e3;
-  padding: 1rem;
-}
-
-td:first-child {
-  border-left: 1px solid #d3d9e3;
-}
-
-tbody > tr:last-child td {
-  border-bottom: 1px solid #d3d9e3;
-}
-
-.d2l-button.primary {
-  background-color: #006fbf;
-  color: #fff;
-}
-
-.d2l-button {
-  margin: 10px;
-  background-color: #f2f3f5;
-  border-color: #d3d9e3;
-  color: #565a5c;
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 0.3rem;
-  box-sizing: border-box;
-  cursor: pointer;
-  display: inline-block;
-  font-family: inherit;
-  outline: none;
-  padding: 0.5rem 1.5rem;
-  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0);
-}
-
-.d2l-button.primary:hover {
-  background-color: #006fbf;
-  color: #fff;
-}
-
-.d2l-button:hover {
-  background-color: #e6eaf0;
-}
-
-.d2l-button:focus {
-  border-color: rgba(0, 111, 191, 0.4);
-  box-shadow: 0 0 0 4px rgba(0, 111, 191, 0.3);
-}
-
-.d2l-checkbox {
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: 1.2rem 1.2rem;
-    border-radius: 0.3rem;
-    border-style: solid;
-    box-sizing: border-box;
-    display: inline-block;
-    height: 1.2rem;
-    margin: 0;
-    padding: 0;
-    transition-duration: 0.5s;
-    transition-timing-function: ease;
-    transition-property: background-color, border-color;
-    vertical-align: middle;
-    width: 1.2rem;
-  }
-
-  .d2l-checkbox:checked {
-    background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23565A5C%22%20d%3D%22M8.4%2016.6c.6.6%201.5.6%202.1%200l8-8c.6-.6.6-1.5%200-2.1-.6-.6-1.5-.6-2.1%200l-6.9%207-1.9-1.9c-.6-.6-1.5-.6-2.1%200-.6.6-.6%201.5%200%202.1l2.9%202.9z%22/%3E%3C/svg%3E%0A");
-  }
-  
-  .d2l-checkbox,
-  .d2l-checkbox:hover:disabled {
-    background-color: #f9fafb;
-    border-width: 1px;
-  }
-  
-  .d2l-checkbox:hover,
-  .d2l-checkbox:focus {
-    border-color: #006fbf;
-    border-width: 2px;
-    outline-width: 0;
-  }
-
-  .d2l-checkbox[aria-invalid="true"] {
-    border-color: #cd2026;
-  }
-
-  .d2l-checkbox:disabled {
-    opacity: 0.5;
-  }
-
-  /* Firefox only, fixed in Firefox 54 */
-  /* https://bugzilla.mozilla.org/show_bug.cgi?id=605985 */
-  @-moz-document url-prefix() {
-    input[type="checkbox"] {
-      -moz-appearance: checkbox;
-    }
-  }
-</style>
+<style src="./css/style.css" scoped></style>
