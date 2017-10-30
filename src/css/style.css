@@ -2,6 +2,11 @@
   margin: 21px 0;
 }
 
+.not-found {
+  font-size: 23px;
+  padding-bottom: 21px;
+}
+
 .loading {
   position: absolute;
   top: 0;

@@ -60,8 +60,11 @@
       </tbody>
     </table>
 
-    <div class="no-results" v-if="showEmptySearch" v-html="$t('lblNoResultsFound', {queryTerm})"></div>
-    <div class="no-results" v-else-if="showNoUsers" v-html="$t('lblNoUsers')"></div>
+    <div class="no-results" v-if="showEmptySearch">
+      <div class="not-found" v-html="$t('lblNoResultsFound', {queryTerm})"></div>
+      <div>{{ $t('lblCheckSpelling') }}</div>
+    </div>
+    <div class="no-results" v-else-if="showNoUsers">{{ $t('lblNoUsers') }}</div>
 
     <button
       :aria-label="$t('ariaLoadMore')"
