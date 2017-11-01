@@ -1,9 +1,20 @@
 <template>
   <div :id="localId" class="activity-exemptions">
-    <button :aria-label="$t('ariaExempt')" class="d2l-button primary" @click="setExempt">
+    <button
+      :aria-label="$t('ariaExempt')"
+      class="d2l-button primary"
+      v-if="!showNoUsers"
+      @click="setExempt">
       {{ $t('btnExempt') }}
     </button>
-    <button :aria-label="$t('ariaUnexempt')" class="d2l-button" @click="setUnexempt">{{ $t('btnUnexempt') }}</button>
+
+    <button
+      :aria-label="$t('ariaUnexempt')"
+      class="d2l-button"
+      v-if="!showNoUsers"
+      @click="setUnexempt">
+      {{ $t('btnUnexempt') }}
+    </button>
     <div class="vui-input-search-container">
       <!--
       This innocent looking form is needed because Release Conditions contains
@@ -16,12 +27,13 @@
           type="search"
           maxlength="60"
           :placeholder="$t('lblSearchPlaceholder')"
+          v-if="!showNoUsers"
           @keyup.enter.prevent.stop="searchUsers(searchBy)"
           ref="searchInput"
           spellcheck="false"
           autocomplete="off">
         <button v-if="showSearchButton(searchBy)" :aria-label="$t('ariaSearchButton')" class="vui-input-search-button" @click="searchUsers(searchBy)"></button>
-        <button v-else :aria-label="$t('btnClearSearch')" class="vui-input-search-clear-button" @click="clearResults"></button>
+        <button v-else-if="!showNoUsers" :aria-label="$t('btnClearSearch')" class="vui-input-search-clear-button" @click="clearResults"></button>
       </form>
     </div>
 
@@ -71,7 +83,10 @@
       <div class="not-found" v-html="$t('lblNoResultsFound', {queryTerm})"></div>
       <div>{{ $t('lblCheckSpelling') }}</div>
     </div>
-    <div class="no-results" v-else-if="showNoUsers">{{ $t('lblNoUsers') }}</div>
+    <div class="no-results" v-else-if="showNoUsers">
+      <div class="not-found">{{ $t('lblNoUsers') }}</div>
+      <div>{{ $t('lblNoPermission') }}</div>
+    </div>
 
     <button
       :aria-label="$t('ariaLoadMore')"

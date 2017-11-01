@@ -52,8 +52,8 @@ export const getters = {
 		return queryTerm
 	},
 
-	showSearchButton({queryTerm}) {
-		return searchBy => !queryTerm || queryTerm !== searchBy
+	showSearchButton({users, queryTerm}) {
+		return searchBy => users.length > 0 && !queryTerm || queryTerm !== searchBy
 	},
 
 	hasUsers({users}) {
