@@ -12,8 +12,8 @@ function d2lAxios(token) {
 		}
 	})
 }
-function getClasslistParams(searchTerm, bookmark){
 
+function getClasslistParams(searchTerm, bookmark){
 	let params = {
 		onlyShowShownInGrades: true
 	}

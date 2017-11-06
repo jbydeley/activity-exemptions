@@ -1,54 +1,30 @@
 <template>
   <div :id="localId" class="activity-exemptions">
-    <button
-      :aria-label="$t('ariaExempt')"
-      class="d2l-button primary"
-      v-if="!showNoUsers"
-      @click="setExempt">
-      {{ $t('btnExempt') }}
-    </button>
+    <exempt-button-group
+      :show-exempt="!showNoUsers" />
 
-    <button
-      :aria-label="$t('ariaUnexempt')"
-      class="d2l-button"
-      v-if="!showNoUsers"
-      @click="setUnexempt">
-      {{ $t('btnUnexempt') }}
-    </button>
-    <div class="vui-input-search-container">
-      <!--
-      This innocent looking form is needed because Release Conditions contains
-      a form element that traps the enter key forcing the Release Condition
-      creation dialog to appear when the user presses enter.
-      -->
-      <form @keydown.enter.prevent>
-        <input
-          v-model="searchBy"
-          type="search"
-          maxlength="60"
-          :placeholder="$t('lblSearchPlaceholder')"
-          v-if="!showNoUsers"
-          @keyup.enter.prevent.stop="searchUsers(searchBy)"
-          ref="searchInput"
-          spellcheck="false"
-          autocomplete="off">
-        <button v-if="showSearchButton(searchBy)" :aria-label="$t('ariaSearchButton')" class="vui-input-search-button" @click="searchUsers(searchBy)"></button>
-        <button v-else-if="!showNoUsers" :aria-label="$t('btnClearSearch')" class="vui-input-search-clear-button" @click="clearResults"></button>
-      </form>
-    </div>
+    <user-search />
 
     <div class="exemptions-count-container">
-      <span class="exemption-count" v-if="!showNoUsers">{{ $t('lblExemptionCount', { exemptionCount }) }}</span>
-      <div class="clear-results-container">
-        <button v-if="showClearButton" class="clear-results-button" @click="clearResults">{{ $t('btnClearSearch') }}</button>
-      </div>
+      <span 
+        v-if="!showNoUsers"
+        class="exemption-count">
+        {{ $t('lblExemptionCount', { exemptionCount }) }}
+      </span>
     </div>
 
-    <table :summary="$t('ariaTableSummary')" v-if="hasUsers">
+    <table 
+      v-if="hasUsers"
+      :summary="$t('ariaTableSummary')">
       <thead>
         <tr>
           <th>
-            <input :aria-label="$t('ariaSelectUnselectAll')" type="checkbox" class="d2l-checkbox" :checked="allSelected" @change="selectAll">
+            <input
+              :aria-label="$t('ariaSelectUnselectAll')"
+              :checked="allSelected"
+              type="checkbox"
+              class="d2l-checkbox"
+              @change="selectAll">
           </th>
           <!--
           To support both User Information Privacy and RTL, we need to conditionally
@@ -79,39 +55,15 @@
       </tbody>
     </table>
 
-    <div class="no-results" v-if="showEmptySearch">
-      <div class="not-found" v-html="$t('lblNoResultsFound', {queryTerm})"></div>
-      <div>{{ $t('lblCheckSpelling') }}</div>
-    </div>
-    <div class="no-results" v-else-if="showNoUsers">
-      <div class="not-found">{{ $t('lblNoUsers') }}</div>
-      <div>{{ $t('lblNoPermission') }}</div>
-    </div>
+    <exempt-button-group
+      :show-load-more="hasMoreItems"
+      :show-exempt="hasUsers"
+      :is-loading="isLoading" />
 
-    <button
-      :aria-label="$t('ariaLoadMore')"
-      :disabled="isLoading"
-      class="d2l-button"
-      v-if="hasMoreItems"
-      @click="loadMore">
-      {{ $t('btnLoadMore') }}
-    </button>
-
-    <button
-      :aria-label="$t('ariaExempt')"
-      class="d2l-button primary"
-      v-if="hasUsers"
-      @click="setExempt">
-      {{ $t('btnExempt') }}
-    </button>
-
-    <button
-      :aria-label="$t('ariaUnexempt')"
-      class="d2l-button"
-      v-if="hasUsers"
-      @click="setUnexempt">
-      {{ $t('btnUnexempt') }}
-    </button>
+    <empty-message 
+      :query-term="queryTerm"
+      :show-empty-search="showEmptySearch"
+      :show-no-users="showNoUsers" />
 
     <div v-if="isLoading" class="loading d2l-partial-render-shimbg2"></div>
   </div>
@@ -119,13 +71,16 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import EmptyMessage from 'src/components/EmptyMessage.vue'
+import ExemptButtonGroup from 'src/components/ExemptButtonGroup.vue'
+import UserSearch from 'src/components/UserSearch.vue'
 
 export default {
   name: 'activity-exemptions',
-  data() {
-    return {
-      searchBy: ''
-    }
+  components: {
+    EmptyMessage,
+    UserSearch,
+    ExemptButtonGroup
   },
 
   created() {
@@ -148,12 +103,11 @@ export default {
       'canSeeFirstName',
       'canSeeLastName',
       'localId',
-      'showClearButton',
-      'showSearchButton',
       'hasUsers',
-      'showEmptySearch',
       'showNoUsers',
-      'queryTerm'
+      'queryTerm',
+      'showEmptySearch',
+      'showNoUsers'
     ]),
 
     ariaSelectText() {
@@ -173,21 +127,9 @@ export default {
 
   methods: {
     ...mapActions([
-      'loadMore',
       'selectAll',
-      'setExempt',
-      'setUnexempt',
       'toggleSelection'
-    ]),
-    clearResults() {
-      this.searchBy = ''
-      this.$store.dispatch('clearResults')
-      this.$refs.searchInput.focus()
-    },
-    searchUsers(searchBy) {
-      this.$store.dispatch('searchUsers', searchBy )
-      this.$refs.searchInput.focus()
-    }
+    ])
   }
 }
 </script>

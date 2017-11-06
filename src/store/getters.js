@@ -65,7 +65,7 @@ export const getters = {
 	},
 
 	showEmptySearch({users, queryTerm}) {
-		return users.length === 0 && queryTerm
+		return users.length === 0 && queryTerm != ''
 	}
 }
 
