@@ -1,7 +1,7 @@
 {
   "name": "activity-exemptions",
   "description": "A Vue.js project",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "author": "Jared Bydeley <jared@bydeley.ca>",
   "private": true,
   "scripts": {

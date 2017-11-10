@@ -56,6 +56,7 @@
     </table>
 
     <exempt-button-group
+      class="bottom-button-group"
       :show-load-more="hasMoreItems"
       :show-exempt="hasUsers"
       :is-loading="isLoading" />

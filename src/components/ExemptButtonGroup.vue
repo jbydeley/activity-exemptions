@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import D2lButton from 'src/components/D2lButton.vue'
 
 export default {
@@ -33,7 +34,7 @@ export default {
 	components: {
 		D2lButton
 	},
-
+	methods: mapActions(['setExempt', 'setUnexempt', 'loadMore']),
 	props: {
 		showLoadMore: {
 			type: Boolean
