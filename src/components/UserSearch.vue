@@ -12,7 +12,7 @@
 				maxlength="60"
 				:placeholder="$t('lblSearchPlaceholder')"
 				v-if="!showNoUsers"
-				@keyup.enter.prevent.stop="searchUsers(searchText)"
+				@keyup.enter.prevent="searchUsers(searchText)"
 				ref="searchInput"
 				spellcheck="false"
 				autocomplete="off">
@@ -21,7 +21,7 @@
 				v-if="showSearchButton(searchText)"
 				:aria-label="$t('ariaSearchButton')"
 				class="vui-input-search-button"
-				@keypress.space.enter.prevent="searchUsers(searchText)"
+				@keyup.enter.prevent="searchUsers(searchText)"
 				@click="searchUsers(searchText)">
 			</button>
 
@@ -29,7 +29,7 @@
 				v-else-if="!showNoUsers"
 				:aria-label="$t('btnClearSearch')"
 				class="vui-input-search-clear-button"
-				@keypress.space.enter.prevent="searchUsers(searchText)"
+				@keyup.enter.prevent="clearResults"
 				@click="clearResults">
 			</button>
 		</form>
