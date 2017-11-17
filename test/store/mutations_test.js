@@ -105,8 +105,11 @@ describe('mutations', () => {
 				users: []
 			}
 
-			LOAD_USERS(state, [1, 2, 3])
+			LOAD_USERS(state, [{name: 'John'}, {name: 'Jane'}, {name: 'Pat'}])
 			expect(state.users.length).toEqual(3)
+			state.users.forEach( user => {
+				expect(user.isSelected).toEqual(false)
+			})
 		})
 	})
 

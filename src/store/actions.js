@@ -165,31 +165,37 @@ export const actions = {
 	loadUsers({commit, state}) {
 		commit(types.IS_LOADING, true)
 
+		let classlist, pagingInfo, exemptions
+
 		Promise.all([
 			axios.get(state.classlistURL, getClasslistParams(state.queryTerm))
-				.then( resp => {
-					commit( types.LOAD_USERS, resp.data.Items.map( r => {
-						r.isSelected = false
-						return r
-				}))
+				.then( ({data}) => {
+					pagingInfo = data.PagingInfo
+					classlist = data.Items
 
-				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
-			})
-			.catch( e => {
+					return true
+				}),
+
+				axios.get(state.exemptionsURL)
+					.then( ({data}) => {
+						exemptions = data
+						return true
+					})
+			])
+			.catch( (e) => {
 				this.dispatch('toast', i18n.t('toastCouldNotLoad'))
 				console.log(e)
-			}),
+			})
+			.then( (x) => {
+				if( !x || x.indexOf(undefined) > -1 ) {
+					return
+				}
 
-			axios.get(state.exemptionsURL)
-				.then( resp => {
-					commit( types.LOAD_EXEMPTIONS, resp.data )
-				})
-				.catch( e => {
-					this.dispatch('toast', i18n.t('toastCouldNotLoad'))
-					console.log(e)
-				})
-		])
-		.then( () => commit( types.IS_LOADING, false ))
+				commit( types.LOAD_USERS, classlist )
+				commit( types.LOAD_PAGINGINFO, pagingInfo)
+				commit( types.LOAD_EXEMPTIONS, exemptions )
+			})
+			.then(() => commit(types.IS_LOADING, false))
 	},
 
 	/*
@@ -202,15 +208,13 @@ export const actions = {
 		commit(types.IS_LOADING, true)
 
 		axios.get(state.classlistURL, getClasslistParams(state.queryTerm, state.bookmark))
-			.then( resp => {
-				commit( types.LOAD_MORE_USERS, resp.data.Items.map( r => {
-					r.isSelected = false
-					return r
-				}) )
-				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
+			.then( ({data}) => {
+				commit( types.LOAD_MORE_USERS, data.Items )
+				commit( types.LOAD_PAGINGINFO, data.PagingInfo )
 				commit( types.IS_LOADING, false )
 			})
 			.catch( e => {
+				commit(types.IS_LOADING, false)
 				this.dispatch('toast', i18n.t('toastCouldNotLoad'))
 				console.log(e)
 			})

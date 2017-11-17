@@ -29,11 +29,11 @@ export const mutations = {
 	},
 
 	[types.LOAD_USERS] (state, users) {
-		state.users = users
+		state.users = users.map( setIsSelected )
 	},
 
 	[types.LOAD_MORE_USERS] (state, users) {
-		state.users.push(...users)
+		state.users.push(...users.map( setIsSelected ))
 	},
 
 	[types.LOAD_PAGINGINFO] (state, pagingInfo) {
@@ -77,4 +77,9 @@ function handleIsNotExempt(userId, state) {
 	}
 
 	state.exemptions.splice( state.exemptions.indexOf( user ), 1 )
+}
+
+function setIsSelected(user) {
+	user.isSelected = false
+	return user
 }

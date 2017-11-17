@@ -13,7 +13,7 @@ export function createStore(toast, updateExemptionCount) {
 			users: [],
 			exemptions: [],
 			bookmark: '',
-			hasMoreItems: true,
+			hasMoreItems: false,
 			classlistURL: '',
 			exemptionsURL: '',
 			exemptionUpdateURL: '',
