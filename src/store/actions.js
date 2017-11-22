@@ -162,40 +162,22 @@ export const actions = {
 	 * to true
 	 */
 
-	loadUsers({commit, state}) {
+	async loadUsers({commit, state}) {
 		commit(types.IS_LOADING, true)
 
-		let classlist, pagingInfo, exemptions
+		try {
+			const {data: classlist} = await axios.get(state.classlistURL, getClasslistParams(state.queryTerm))
+			const {data: exemptions} = await axios.get(state.exemptionsURL)
 
-		Promise.all([
-			axios.get(state.classlistURL, getClasslistParams(state.queryTerm))
-				.then( ({data}) => {
-					pagingInfo = data.PagingInfo
-					classlist = data.Items
-
-					return true
-				}),
-
-				axios.get(state.exemptionsURL)
-					.then( ({data}) => {
-						exemptions = data
-						return true
-					})
-			])
-			.catch( (e) => {
-				this.dispatch('toast', i18n.t('toastCouldNotLoad'))
-				console.log(e)
-			})
-			.then( (x) => {
-				if( !x || x.indexOf(undefined) > -1 ) {
-					return
-				}
-
-				commit( types.LOAD_USERS, classlist )
-				commit( types.LOAD_PAGINGINFO, pagingInfo)
-				commit( types.LOAD_EXEMPTIONS, exemptions )
-			})
-			.then(() => commit(types.IS_LOADING, false))
+			commit(types.LOAD_USERS, classlist.Items)
+			commit(types.LOAD_PAGINGINFO, classlist.PagingInfo)
+			commit(types.LOAD_EXEMPTIONS, exemptions)
+		} catch(e) {
+			this.dispatch('toast', i18n.t('toastCouldNotLoad'))
+			console.log(e)
+		}
+		
+		commit(types.IS_LOADING, false)
 	},
 
 	/*
@@ -204,19 +186,19 @@ export const actions = {
 	 * loadMore will contact the LMS and retrieve additional users based on
 	 * state.bookmark. These will be added to state.users
 	 */
-	loadMore({commit, state}) {
+	async loadMore({commit, state}) {
 		commit(types.IS_LOADING, true)
 
-		axios.get(state.classlistURL, getClasslistParams(state.queryTerm, state.bookmark))
-			.then( ({data}) => {
-				commit( types.LOAD_MORE_USERS, data.Items )
-				commit( types.LOAD_PAGINGINFO, data.PagingInfo )
-				commit( types.IS_LOADING, false )
-			})
-			.catch( e => {
-				commit(types.IS_LOADING, false)
-				this.dispatch('toast', i18n.t('toastCouldNotLoad'))
-				console.log(e)
-			})
+		try {
+			const {data: classlist} = await axios.get(state.classlistURL, getClasslistParams(state.queryTerm, state.bookmark))
+
+			commit( types.LOAD_MORE_USERS, classlist.Items )
+			commit( types.LOAD_PAGINGINFO, classlist.PagingInfo )
+		} catch(e) {
+			this.dispatch('toast', i18n.t('toastCouldNotLoad'))
+			console.log(e)
+		}
+
+		commit(types.IS_LOADING, false)
 	}
 }
