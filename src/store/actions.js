@@ -1,10 +1,11 @@
-import axios from 'axios'
+import 'whatwg-fetch'
 import {i18n} from 'i18n'
 import * as types from './mutation-types'
 
-function d2lAxios(token) {
-	return axios.create({
-		withCredentials: true,
+function d2lFetch(url, method, token) {
+	return fetch(url, {
+		method,
+		credentials: 'include',
 		headers: {
 			'Access-Control-Allow-Origin': '*',
 			'Content-Type': 'application/json',
@@ -14,17 +15,15 @@ function d2lAxios(token) {
 }
 
 function getClasslistParams(searchTerm, bookmark){
-	let params = {
-		onlyShowShownInGrades: true
-	}
+	let params = '?onlyShowShownInGrades=true'
 
 	if (searchTerm){
-		params.searchTerm = searchTerm
+		params = `${params}&searchTerm=${searchTerm}`
 	}
 	if (bookmark){
-		params.bookmark = bookmark
+		params = `${params}&bookmark=${bookmark}`
 	}
-	return { params };
+	return params
 }
 
 /*
@@ -45,21 +44,21 @@ export const actions = {
 	 */
 	setExempt({commit, state}) {
 		const selectedUsers = state.users.filter( u => u.isSelected && !state.exemptions.find( e => e.UserId == u.Identifier ) )
-		let errorCount = 0
 
-		axios.all(selectedUsers.map( user => {
+		Promise.all(selectedUsers.map( async (user) => {
 			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true})
-			return d2lAxios(state.token).post(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
-				.catch( e => {
-					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
-					errorCount++
-				})
+			const {ok} = await d2lFetch(`${state.exemptionUpdateURL}&userId=${user.Identifier}`, 'POST', state.token)
+			if( !ok ) {
+				commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
+			}
+
+			return ok
 		}))
-		.then(axios.spread( () => {
-			const count = selectedUsers.length - errorCount
+		.then( response => {
+			const count = response.filter( r => r ).length
 			this.dispatch('toast', i18n.tc('toastExempt', count, {count}))
 			this.dispatch('updateExemptionCount')
-		}))
+		})
 	},
 
 	/*
@@ -73,19 +72,20 @@ export const actions = {
 		const selectedUsers = state.users.filter( u => u.isSelected && state.exemptions.find( e => e.UserId == u.Identifier ) )
 		let errorCount = 0
 
-		axios.all(selectedUsers.map( user => {
+		Promise.all(selectedUsers.map( async (user) => {
 			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
-			return d2lAxios(state.token).delete(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
-				.catch( e => {
-					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true})
-					errorCount++
-				})
+			const { ok } = await d2lFetch(`${state.exemptionUpdateURL}&userId=${user.Identifier}`, 'delete', state.token)
+			if( !ok ) {
+				commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true})
+			}
+
+			return ok
 		}))
-		.then(axios.spread( () => {
-			const count = selectedUsers.length - errorCount
+		.then( response => {
+			const count = response.filter( r => r).length
 			this.dispatch('toast', i18n.tc('toastUnexempt', count, {count}))
 			this.dispatch('updateExemptionCount')
-		}))
+		})
 	},
 
 	/*
@@ -166,8 +166,11 @@ export const actions = {
 		commit(types.IS_LOADING, true)
 
 		try {
-			const {data: classlist} = await axios.get(state.classlistURL, getClasslistParams(state.queryTerm))
-			const {data: exemptions} = await axios.get(state.exemptionsURL)
+			const classlist = await fetch(`${state.classlistURL}${getClasslistParams(state.queryTerm)}`, { credentials: 'include' })
+				.then(r => r.json())
+
+			const exemptions = await fetch(state.exemptionsURL, { credentials: 'include' })
+				.then(r => r.json())
 
 			commit(types.LOAD_USERS, classlist.Items)
 			commit(types.LOAD_PAGINGINFO, classlist.PagingInfo)
@@ -190,7 +193,8 @@ export const actions = {
 		commit(types.IS_LOADING, true)
 
 		try {
-			const {data: classlist} = await axios.get(state.classlistURL, getClasslistParams(state.queryTerm, state.bookmark))
+			const classlist = await fetch(`${state.classlistURL}${getClasslistParams(state.queryTerm, state.bookmark)}`)
+				.then( r => r.json() )
 
 			commit( types.LOAD_MORE_USERS, classlist.Items )
 			commit( types.LOAD_PAGINGINFO, classlist.PagingInfo )
