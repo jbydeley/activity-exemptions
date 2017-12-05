@@ -193,7 +193,7 @@ export const actions = {
 		commit(types.IS_LOADING, true)
 
 		try {
-			const classlist = await fetch(`${state.classlistURL}${getClasslistParams(state.queryTerm, state.bookmark)}`)
+			const classlist = await fetch(`${state.classlistURL}${getClasslistParams(state.queryTerm, state.bookmark)}`, { credentials: 'include' })
 				.then( r => r.json() )
 
 			commit( types.LOAD_MORE_USERS, classlist.Items )
