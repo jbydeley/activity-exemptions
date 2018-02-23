@@ -1,54 +1,55 @@
 <template>
 	<div class="exempt-button-group">
-		<d2l-button
+		<button
+			class="c-btn"
 			v-if="showLoadMore"
 			:aria-label="$t('ariaLoadMore')"
 			:disabled="isLoading"
-			@click.native="loadMore">
+			@click="loadMore">
 			{{ $t('btnLoadMore') }}
-		</d2l-button>
+		</button>
 
-		<d2l-button primary
-			v-if="showExempt"
+		<button
+			class="c-btn c-btn--primary"
 			:aria-label="$t('ariaExempt')"
-			@click.native="setExempt">
+			@click="setExempt">
 			{{ $t('btnExempt') }}
-		</d2l-button>
+		</button>
 
-		<d2l-button
-			v-if="showExempt"
+		<button
+			class="c-btn"
 			:aria-label="$t('ariaUnexempt')"
-			@click.native="setUnexempt">
+			@click="setUnexempt">
 			{{ $t('btnUnexempt') }}
-		</d2l-button>
+		</button>
 	</div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
-import D2lButton from 'src/components/D2lButton.vue'
+import { mapGetters } from 'vuex'
 
 export default {
 	name: 'ExemptButtonGroup',
-
-	components: {
-		D2lButton
-	},
-	methods: mapActions(['setExempt', 'setUnexempt', 'loadMore']),
 	props: {
+		loadMore: {
+			type: Function,
+			default: () => {}
+		},
 		showLoadMore: {
 			type: Boolean
 		},
-		showExempt: {
-			type: Boolean
+		setExempt: {
+			type: Function,
+			default: () => {}
 		},
-		showUnexempt: {
-			type: Boolean
-		},
-		isLoading: {
-			type: Boolean
+		setUnexempt: {
+			type: Function,
+			default: () => {}
 		}
-	}
+	},
+	computed: mapGetters([
+		'isLoading'
+	])
 }
 </script>
 

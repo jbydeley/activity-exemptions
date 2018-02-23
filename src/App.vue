@@ -1,72 +1,87 @@
 <template>
-  <div :id="localId" class="activity-exemptions">
-    <exempt-button-group
-      :show-exempt="!showNoUsers" />
+  <div :id="localId" class="c-app">
 
-    <user-search />
-
-    <div class="exemptions-count-container">
-      <span 
+    <div class="c-header-left">
+      <exempt-button-group
         v-if="!showNoUsers"
-        class="exemption-count">
-        {{ $t('lblExemptionCount', { exemptionCount }) }}
-      </span>
+        :set-exempt="setExempt"
+        :set-unexempt="setUnexempt" />
+
+        <span 
+          v-if="!showNoUsers"
+          class="c-header-left__exemption-count">
+          {{ $t('lblExemptionCount', { exemptionCount }) }}
+        </span>
     </div>
 
-    <table 
-      v-if="hasUsers"
-      :summary="$t('ariaTableSummary')">
-      <thead>
-        <tr>
-          <th>
-            <input
-              :aria-label="$t('ariaSelectUnselectAll')"
-              :checked="allSelected"
-              type="checkbox"
-              class="d2l-checkbox"
-              @change="selectAll">
-          </th>
-          <!--
-          To support both User Information Privacy and RTL, we need to conditionally
-          render one of four options. If the API changes in the future to support
-          preferred names, this could be reduced or eliminated entirely.
-           -->
-          <th>
-            <span v-if="canSeeFirstName">{{ $t('lblFirstName') }}</span>
-            <span v-if="canSeeLastName">{{ $t('lblLastName') }}</span>
-            <span v-if="!canSeeFirstName && !canSeeLastName">{{ $t('lblUser') }}</span>
-          </th>
-          <th v-if="canSeeOrgIdColumn">{{ $t('lblOrgDefinedId') }}</th>
-          <th>{{ $t('lblExemptStatus') }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in allUsers" :key="user.Identifier">
-          <td>
-            <input :aria-label="ariaSelectText(user)" type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
-          </td>
-          <td>{{user.fullName}}</td>
-          <td v-if="canSeeOrgIdColumn">{{user.OrgDefinedId}}</td>
-          <td>
-            <span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span>
-            <span v-else class="d2l-offscreen">{{ $t('lblNotExempt') }}</span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <user-search class="c-header-right" v-if="!showNoUsers" />
 
-    <exempt-button-group
-      class="bottom-button-group"
-      :show-load-more="hasMoreItems"
-      :show-exempt="hasUsers"
-      :is-loading="isLoading" />
+    <div class="c-content">
+      <table
+        class="c-table"
+        v-if="hasUsers"
+        :summary="$t('ariaTableSummary')">
+        <thead class="c-table__header">
+          <tr>
+            <th class="c-table__header__row__th">
+              <input
+                :aria-label="$t('ariaSelectUnselectAll')"
+                :checked="allSelected"
+                type="checkbox"
+                class="c-checkbox"
+                @change="selectAll">
+            </th>
+            <!--
+            To support both User Information Privacy and RTL, we need to conditionally
+            render one of four options. If the API changes in the future to support
+            preferred names, this could be reduced or eliminated entirely.
+            -->
+            <th class="c-table__header__row__th">
+              <span v-if="canSeeFirstName">{{ $t('lblFirstName') }}</span>
+              <span v-if="canSeeLastName">{{ $t('lblLastName') }}</span>
+              <span v-if="!canSeeFirstName && !canSeeLastName">{{ $t('lblUser') }}</span>
+            </th>
+            <th class="c-table__header__row__th" v-if="canSeeOrgIdColumn">{{ $t('lblOrgDefinedId') }}</th>
+            <th class="c-table__header__row__th">{{ $t('lblExemptStatus') }}</th>
+          </tr>
+        </thead>
+        <tbody class="c-table__body">
+          <tr class="c-table__body__row" v-for="user in allUsers" :key="user.Identifier">
+            <td  class="c-table__body__row__td">
+              <input :aria-label="ariaSelectText(user)" type="checkbox" class="c-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
+            </td>
+            <td  class="c-table__body__row__td">{{user.fullName}}</td>
+            <td  class="c-table__body__row__td" v-if="canSeeOrgIdColumn">{{user.OrgDefinedId}}</td>
+            <td  class="c-table__body__row__td">
+              <span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span>
+              <span v-else class="c-offscreen">{{ $t('lblNotExempt') }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
 
-    <empty-message 
-      :query-term="queryTerm"
-      :show-empty-search="showEmptySearch"
-      :show-no-users="showNoUsers" />
+      <empty-message 
+        :query-term="queryTerm"
+        :show-empty-search="showEmptySearch"
+        :show-no-users="showNoUsers" />
 
-    <div v-if="isLoading" class="loading d2l-partial-render-shimbg2"></div>
+    </div>
+
+    <div class="c-footer">
+      <exempt-button-group
+        class="bottom-button-group"
+        v-if="hasUsers"
+        :show-load-more="hasMoreItems"
+        :load-more="loadMore"
+        :set-exempt="setExempt"
+        :set-unexempt="setUnexempt" />
+    </div>
+
+    <div class="overlay">
+      <transition name="fade">
+        <div v-if="isLoading" class="c-loading d2l-partial-render-shimbg2"></div>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -126,13 +141,82 @@ export default {
     }
   },
 
-  methods: {
-    ...mapActions([
-      'selectAll',
-      'toggleSelection'
-    ])
-  }
+  methods: mapActions([
+    'selectAll',
+    'toggleSelection',
+    'setExempt',
+    'setUnexempt',
+    'loadMore'
+  ])
 }
 </script>
 
-<style src="./css/style.css" scoped></style>
+<style lang="scss">
+@import 'css/_colors';
+@import 'css/table';
+@import 'css/checkbox';
+@import 'css/offscreen';
+@import 'css/button';
+@import 'css/animations';
+
+.c-app {
+  display: -ms-grid;
+  display: grid;
+  
+  grid-template-columns: 50% 50%;
+  -ms-grid-columns: 50% 50%;
+  grid-template-rows: auto;
+  -ms-grid-rows: auto;
+  color: $d2l-color-ferrite;
+  font-family: 'Lato', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;
+  padding-bottom: 50px;
+  font-size: 20px;
+}
+
+.c {
+  @at-root #{&}-header-left {
+    grid-row: 1;
+    grid-column: 1;
+
+    @at-root #{&}__exemption-count {
+      display: block;
+      margin-top: 20px;
+      font-size: .9rem;
+    }
+  }
+
+  @at-root #{&}-header-right {
+    align-content:flex-start;
+    grid-row: 1;
+    grid-column: 2;
+    -ms-grid-row: 1;
+    -ms-grid-column: 2;    
+  }
+
+  @at-root #{&}-content {
+    grid-row: 2;
+    grid-column: span 2;
+    -ms-grid-row: 2;
+    -ms-grid-column: 1;
+    -ms-grid-column-span: 2;
+  }
+
+  @at-root #{&}-footer {
+    grid-row: 3;
+    grid-column: 1;
+    -ms-grid-row: 3;
+    -ms-grid-column: 1;
+  }
+}
+
+c-loading {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 99;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+</style>

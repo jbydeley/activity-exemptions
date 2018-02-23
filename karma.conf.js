@@ -6,6 +6,7 @@ module.exports = function karmaConfig(config) {
     frameworks: ['jasmine'],
 
     files: [
+      'node_modules/babel-polyfill/dist/polyfill.js',
       { pattern: 'test/**/*_test.js', watched: true },
     ],
 
@@ -18,7 +19,7 @@ module.exports = function karmaConfig(config) {
     colors: true,
     logLevel: config.LOG_ERROR,
     autoWatch: true,
-    browsers: ['PhantomJS', 'Firefox'],
+    browsers: ['PhantomJS', 'Firefox', 'Chrome'],
     singleRun: true,
     concurrency: Infinity,
     webpack: webpackConfig,

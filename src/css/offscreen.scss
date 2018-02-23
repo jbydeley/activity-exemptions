@@ -1,0 +1,14 @@
+.c-offscreen {
+  word-wrap: normal !important;
+  position: absolute !important;
+  left: -1000px;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 1px;
+  height: 1px;
+
+  [dir="rtl"] & {
+    left: 0;
+    right: -1000px
+  }
+}

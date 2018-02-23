@@ -7,59 +7,64 @@ function resolve (dir) {
 }
 
 module.exports = {
-  entry: './src/main.js',
+  entry: "./src/main.js",
   output: {
-    path: path.resolve(__dirname, './dist'),
-    publicPath: '/dist/',
-    filename: 'activity-exemptions.js'
+    path: path.resolve(__dirname, "./dist"),
+    publicPath: "/dist/",
+    filename: "activity-exemptions.js"
   },
   module: {
     rules: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
+        loader: "vue-loader",
         options: {
-          loaders: {
-          }
+          loaders: {}
           // other vue-loader options go here
         }
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
+        loader: "babel-loader",
         exclude: /node_modules/
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
-        loader: 'file-loader',
+        loader: "file-loader",
         options: {
-          name: '[name].[ext]?[hash]'
+          name: "[name].[ext]?[hash]"
         }
+      },
+      {
+        test: /\.scss$/,
+        loaders: ["style", "css", "sass"]
       }
     ]
   },
   resolve: {
     alias: {
-      'vue$': 'vue/dist/vue.runtime.esm.js',
-      '@': resolve('src')
+      vue$: "vue/dist/vue.runtime.esm.js",
+      "@": resolve("src")
     },
     modules: [
       __dirname,
-      path.resolve(__dirname, './node_modules'),
-      path.resolve(__dirname, './src'),
-      path.resolve(__dirname, './test')
+      path.resolve(__dirname, "./node_modules"),
+      path.resolve(__dirname, "./src"),
+      path.resolve(__dirname, "./test")
     ]
   },
   devServer: {
     historyApiFallback: true,
     proxy: {
-      '/d2l': {
-        target: 'http://localhost:8080/',
+      "/d2l": {
+        target: "http://localhost:8080/",
         changeOrigin: true,
         pathRewrite: {
-          '^/d2l/api/le/1.26/6613/classlist': '/testData/classlist.json',
-          '^/d2l/api/le/1.26/6613/activities/exemptions/': '/testData/exemptions.json',
-          '^/d2l/api/le/1.26/6613/activities/exemptions*': '/testData/exemptions.json'
+          "^/d2l/api/le/1.26/6613/classlist": "/testData/classlist.json",
+          "^/d2l/api/le/1.26/6613/activities/exemptions/":
+            "/testData/exemptions.json",
+          "^/d2l/api/le/1.26/6613/activities/exemptions*":
+            "/testData/exemptions.json"
         }
       }
     },
@@ -68,8 +73,8 @@ module.exports = {
   performance: {
     hints: false
   },
-  devtool: '#eval-source-map'
-}
+  devtool: "#eval-source-map"
+};
 
 if (process.env.NODE_ENV === 'production') {
   module.exports.devtool = '#source-map'

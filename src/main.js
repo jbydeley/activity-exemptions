@@ -7,6 +7,8 @@ import {createStore} from 'store/index'
 import * as types from 'store/mutation-types'
 import {i18n} from 'i18n'
 
+Vue.config.performance = process.env.NODE_ENV !== "production"
+
 function loadVue(
 	id,
 	classlistURL,

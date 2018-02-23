@@ -1,0 +1,84 @@
+@import 'css/_colors';
+
+.c-table {
+    background-color: transparent;
+    border-collapse: separate !important;
+    border-spacing: 0;
+    display: table;
+    font-size: 0.8rem;
+    font-weight: 400;
+    width: 100%;
+    @at-root #{&}__header {
+        @at-root #{&}__row {
+            @at-root #{&}__th {
+                border-top: 1px solid $d2l-color-mica;
+                color: $d2l-color-ferrite;
+                background-color: $d2l-color-regolith;
+                margin: 1rem 0;
+                border-right: 1px solid $d2l-color-mica;
+                padding: 1rem;
+                text-align: left;
+                vertical-align: middle;
+                text-align: left;
+                &:first-child {
+                    border-top-left-radius: 0.3rem;
+                    border-left: 1px solid $d2l-color-mica;
+                    [dir="rtl"] & {
+                        border-top-right-radius: 0.3rem;
+                        border-top-left-radius: 0;
+                        border-left: 0;
+                    }
+                }
+                &:last-child {
+                    border-top-right-radius: 0.3rem;
+                    [dir="rtl"] & {
+                        border-top-left-radius: 0.3rem;
+                        border-top-right-radius: 0rem;
+                        border-left: 1px solid $d2l-color-mica;
+                    }
+                }
+                [dir="rtl"] & {
+                    text-align: right;
+                }
+            }
+        }
+    }
+    @at-root #{&}__body {
+        @at-root #{&}__row {
+            &:last-child {
+                td {
+                    border-bottom: 1px solid $d2l-color-mica;
+                    &:first-child {
+                        border-bottom-left-radius: 0.3rem;
+                        [dir="rtl"] & {
+                            border-bottom-left-radius: 0;
+                            border-bottom-right-radius: 0.3rem;
+                        }
+                    }
+                    &:last-child {
+                        border-bottom-right-radius: 0.3rem;
+                        [dir="rtl"] & {
+                            border-bottom-left-radius: 0.3rem;
+                            border-bottom-right-radius: 0;
+                        }
+                    }
+                }
+            }
+            @at-root #{&}__td {
+                border-top: 1px solid $d2l-color-mica;
+                border-right: 1px solid $d2l-color-mica;
+                padding: 1rem;
+                &:first-child {
+                    border-left: 1px solid $d2l-color-mica;
+                    [dir="rtl"] & {
+                        border-right: 1px solid $d2l-color-mica;
+                        border-left: 0;
+                    }
+                }
+                [dir="rtl"] &:last-child {
+                    border-left: 1px solid $d2l-color-mica;
+                }
+            }
+        }
+    }
+}

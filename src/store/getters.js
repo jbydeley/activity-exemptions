@@ -48,14 +48,6 @@ export const getters = {
 		return queryTerm
 	},
 
-	showClearButton({queryTerm}) {
-		return queryTerm
-	},
-
-	showSearchButton({users, queryTerm}) {
-		return searchBy => users.length > 0 && !queryTerm || queryTerm !== searchBy
-	},
-
 	hasUsers({users}) {
 		return users.length > 0
 	},
