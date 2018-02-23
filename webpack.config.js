@@ -11,7 +11,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, './dist'),
     publicPath: '/dist/',
-    filename: 'build.js'
+    filename: 'activity-exemptions.js'
   },
   module: {
     rules: [
@@ -40,7 +40,7 @@ module.exports = {
   },
   resolve: {
     alias: {
-      'vue$': 'vue/dist/vue.esm.js',
+      'vue$': 'vue/dist/vue.runtime.esm.js',
       '@': resolve('src')
     },
     modules: [

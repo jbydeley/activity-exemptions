@@ -1,113 +1,208 @@
-import axios from 'axios'
-
+import 'whatwg-fetch'
+import {i18n} from 'i18n'
 import * as types from './mutation-types'
 
-const token = D2L.LP.Web.Authentication.Xsrf.GetXsrfToken();
+function d2lFetch(url, method, token) {
+	return fetch(url, {
+		method,
+		credentials: 'include',
+		headers: {
+			'Access-Control-Allow-Origin': '*',
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': token
+		}
+	})
+}
 
-const d2lAxios = axios.create({
-	withCredentials: true,
-	headers: {
-		'Access-Control-Allow-Origin': '*',
-		'Content-Type': 'application/json',
-		'X-CSRF-Token': token
+function getClasslistParams(searchTerm, bookmark){
+	let params = '?onlyShowShownInGrades=true'
+
+	if (searchTerm){
+		params = `${params}&searchTerm=${searchTerm}`
 	}
-})
+	if (bookmark){
+		params = `${params}&bookmark=${bookmark}`
+	}
+	return params
+}
 
+/*
+ * actions
+ *
+ * See: https://vuex.vuejs.org/en/actions.html
+ * Actions are similar to mutations but are allowed to execute arbitrary asynchronous
+ * operations. Instead of directly mutating state, they call mutations after the
+ * asynchronous operations are complete
+ */
 export const actions = {
+	/*
+	 * setExempt( context )
+	 *
+	 * setExempt finds all users that are selected and unexempt and attempts
+	 * to post to the exemptionUpdateURL with the user's ID. A toast message
+	 * will be posted back to the LMS
+	 */
 	setExempt({commit, state}) {
 		const selectedUsers = state.users.filter( u => u.isSelected && !state.exemptions.find( e => e.UserId == u.Identifier ) )
-		let errorCount = []
 
-		axios.all(selectedUsers.map( user => {
-			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true}) 
-			d2lAxios.post(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
-				.then( resp => {
-					commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true}) 
-				})
-				.catch( e => errorCount.push(e) )
-		}))
-		.then(axios.spread( () => {
-			D2L.LP.Web.UI.Rpc.Connect(
-				'GET',
-				new D2L.LP.Web.Http.UrlLocation.Create(
-					'/d2l/le/manageexemptions/6609/UserExempted'
-				)
-			)
-		}))
+		Promise.all(selectedUsers.map( async (user) => {
+			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true})
+			const {ok} = await d2lFetch(`${state.exemptionUpdateURL}&userId=${user.Identifier}`, 'POST', state.token)
+			if( !ok ) {
+				commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
+			}
 
-		if( errorCount.length > 0 ) {
-			errorCount.forEach( e => {
-				console.log(e)
-			})
+			return ok
+		}))
+		.then( response => {
+			const count = response.filter( r => r ).length
+			this.dispatch('toast', i18n.tc('toastExempt', count, {count}))
+			this.dispatch('updateExemptionCount')
+		})
+	},
+
+	/*
+	 * setUnexempt( context )
+	 *
+	 * setUnexempt finds all users that are selected and exempt and attempts
+	 * to send a delete to the exemptionUpdateURL with the user's ID. A toast message
+	 * will be posted back to the LMS
+	 */
+	setUnexempt({commit, state}) {
+		const selectedUsers = state.users.filter( u => u.isSelected && state.exemptions.find( e => e.UserId == u.Identifier ) )
+		let errorCount = 0
+
+		Promise.all(selectedUsers.map( async (user) => {
+			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
+			const { ok } = await d2lFetch(`${state.exemptionUpdateURL}&userId=${user.Identifier}`, 'delete', state.token)
+			if( !ok ) {
+				commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: true})
+			}
+
+			return ok
+		}))
+		.then( response => {
+			const count = response.filter( r => r).length
+			this.dispatch('toast', i18n.tc('toastUnexempt', count, {count}))
+			this.dispatch('updateExemptionCount')
+		})
+	},
+
+	/*
+	 * searchUsers( context )
+	 *
+	 * searchUsers calls prepares the search against the classlist api
+	 * with a query parameter for loadUsers.
+	 */
+	searchUsers({commit, state}, searchBy) {
+		// Check null searchBy
+		if( !searchBy || !/\S/.test(searchBy) ) {
+			// If there is already a resulted list of students
+			if( state.queryTerm ) {
+				this.dispatch('clearResults')
+			} else {
+				return
+			}
+		} else {			
+			// Check if its the same term
+			if( searchBy === state.queryTerm) {
+				// Don't need to do anything if its the same term
+				return
+			}
+			// New search term clear users
+			commit(types.LOAD_USERS, [])
+			// Set new term for queryTerm
+			commit(types.SET_QUERY_TERM, searchBy)
+			// Reset paging info
+			commit(types.LOAD_PAGINGINFO, {})
+			// Call loadUsers to load first page
+			this.dispatch('loadUsers')
 		}
 	},
 
-	setUnexempt({commit, state}) {
-		const selectedUsers = state.users.filter( u => u.isSelected && state.exemptions.find( e => e.UserId == u.Identifier ) )
-
-		axios.all(selectedUsers.forEach( user => {
-			commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false})
-			d2lAxios.delete(`${state.exemptionUpdateURL}&userId=${user.Identifier}`)
-				.then( resp => commit(types.SET_EXEMPT, {id: user.Identifier, isExempt: false}) )
-				.catch( e => console.log(e) )
-		}))
-		.then(axios.spread( () => {
-			D2L.LP.Web.UI.Rpc.Connect(
-				'GET',
-				new D2L.LP.Web.Http.UrlLocation.Create(
-					'/d2l/le/manageexemptions/6609/UserExempted'
-				)
-			)
-		}))
+	/*
+	 * clearResults( context )
+	 *
+	 * clearResults clears the search box and results reloads the original load
+	 */
+	clearResults({commit, state}) {
+		// Clear search term
+		commit(types.SET_QUERY_TERM, '')
+		// Load original list
+		commit(types.LOAD_USERS, [])
+		this.dispatch('loadUsers')
 	},
 
+	/*
+	 * toggleSelection( context, user )
+	 *
+	 * toggleSelection will set the isSelect for the user
+	 */
 	toggleSelection({commit}, user) {
 		commit(types.SET_USER_SELECTION, { Identifier: user.Identifier, isSelect: !user.isSelected })
 	},
 
-	selectAll({commit, state}, user) {
+	/*
+	 * selectAll( context )
+	 *
+	 * selectAll will set the isSelected for all users. If any users are not
+	 * selected, selectAll will set isSelected to true for all users. Otherwise
+	 * isSelected will be set to false for all users
+	 */
+	selectAll({commit, state}) {
 		const isSelect = state.users.some( u => !u.isSelected )
 		state.users.forEach( u => commit(types.SET_USER_SELECTION, {Identifier: u.Identifier, isSelect} ))
 	},
 
-	loadUsers({commit}, {classlistURL, exemptionsURL, exemptionUpdateURL}) {
-		commit(types.SET_CLASSLIST_URL, classlistURL)
-		commit(types.SET_EXEMPTIONS_URL, exemptionsURL)
-		commit(types.SET_EXEMPTION_UPDATE_URL, exemptionUpdateURL)
+	/*
+	 * loadUsers( context, urlList )
+	 *
+	 * loadUsers will set all the required URLs and load the classlist
+	 * and exemption list. While loading, state.isLoading will be set
+	 * to true
+	 */
 
-		axios.get(classlistURL)
-			.then( resp => {
-				commit( types.LOAD_USERS, resp.data.Items.map( r => {
-					r.isSelected = false
-					return r
-				}))
+	async loadUsers({commit, state}) {
+		commit(types.IS_LOADING, true)
 
-				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
-			})
-			.catch( e => {
-				console.log(e)
-			})
+		try {
+			const classlist = await fetch(`${state.classlistURL}${getClasslistParams(state.queryTerm)}`, { credentials: 'include' })
+				.then(r => r.json())
 
-		axios.get(exemptionsURL)
-			.then( resp => {
-				commit( types.LOAD_EXEMPTIONS, resp.data )
-			})
-			.catch( e => {
-				console.log(e)
-			})
+			const exemptions = await fetch(state.exemptionsURL, { credentials: 'include' })
+				.then(r => r.json())
+
+			commit(types.LOAD_USERS, classlist.Items)
+			commit(types.LOAD_PAGINGINFO, classlist.PagingInfo)
+			commit(types.LOAD_EXEMPTIONS, exemptions)
+		} catch(e) {
+			this.dispatch('toast', i18n.t('toastCouldNotLoad'))
+			console.log(e)
+		}
+		
+		commit(types.IS_LOADING, false)
 	},
 
-	loadMore({commit, state}) {
-		axios.get(`${state.classlistURL}?bookmark=${state.bookmark}`)
-			.then( resp => {
-				commit( types.LOAD_MORE_USERS, resp.data.Items.map( r => {
-					r.isSelected = false
-					return r
-				}) )
-				commit( types.LOAD_PAGINGINFO, resp.data.PagingInfo )
-			})
-			.catch( e => {
-				console.log(e)
-			})
+	/*
+	 * loadMore( context )
+	 *
+	 * loadMore will contact the LMS and retrieve additional users based on
+	 * state.bookmark. These will be added to state.users
+	 */
+	async loadMore({commit, state}) {
+		commit(types.IS_LOADING, true)
+
+		try {
+			const classlist = await fetch(`${state.classlistURL}${getClasslistParams(state.queryTerm, state.bookmark)}`, { credentials: 'include' })
+				.then( r => r.json() )
+
+			commit( types.LOAD_MORE_USERS, classlist.Items )
+			commit( types.LOAD_PAGINGINFO, classlist.PagingInfo )
+		} catch(e) {
+			this.dispatch('toast', i18n.t('toastCouldNotLoad'))
+			console.log(e)
+		}
+
+		commit(types.IS_LOADING, false)
 	}
 }

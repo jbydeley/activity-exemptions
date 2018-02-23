@@ -1,4 +1,4 @@
-require('test/find')
+require('polyfill/find')
 describe('mutations', () => {
 	const {mutations} = require('store/mutations')
 	
@@ -105,8 +105,11 @@ describe('mutations', () => {
 				users: []
 			}
 
-			LOAD_USERS(state, [1, 2, 3])
+			LOAD_USERS(state, [{name: 'John'}, {name: 'Jane'}, {name: 'Pat'}])
 			expect(state.users.length).toEqual(3)
+			state.users.forEach( user => {
+				expect(user.isSelected).toEqual(false)
+			})
 		})
 	})
 
@@ -136,6 +139,19 @@ describe('mutations', () => {
 
 			LOAD_EXEMPTIONS(state, [1, 2, 3])
 			expect(state.exemptions.length).toEqual(3)
+		})
+	})
+
+	describe('IS_LOADING', () => {
+		const {IS_LOADING} = mutations
+
+		it('should set the isLoading in the state', () => {
+			let state = {
+				isLoading: false
+			}
+
+			IS_LOADING(state, true)
+			expect(state.isLoading).toEqual(true)
 		})
 	})
 })

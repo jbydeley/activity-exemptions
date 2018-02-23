@@ -5,8 +5,6 @@ export const mutations = {
 		isExempt
 			? handleIsExempt(id, state)
 			: handleIsNotExempt(id, state)
-
-		window.postMessage('update-activity-exemptions', '*')
 	},
 
 	[types.SET_USER_SELECTION] (state, {Identifier, isSelect}) {
@@ -31,11 +29,11 @@ export const mutations = {
 	},
 
 	[types.LOAD_USERS] (state, users) {
-		state.users = users
+		state.users = users.map( setIsSelected )
 	},
 
 	[types.LOAD_MORE_USERS] (state, users) {
-		state.users.push(...users)
+		state.users.push(...users.map( setIsSelected ))
 	},
 
 	[types.LOAD_PAGINGINFO] (state, pagingInfo) {
@@ -45,12 +43,28 @@ export const mutations = {
 
 	[types.LOAD_EXEMPTIONS] (state, exemptions) {
 		state.exemptions = exemptions
+	},
+
+	[types.IS_LOADING] (state, isLoading) {
+		state.isLoading = isLoading
+	},
+
+	[types.SET_TOKEN] (state, token) {
+		state.token = token
+	},
+
+	[types.SET_LOCAL_ID] (state, localId) {
+		state.localId = localId
+	},
+
+	[types.SET_QUERY_TERM] (state, queryTerm) {
+		state.queryTerm = queryTerm
 	}
 }
 
 function handleIsExempt(userId, state) {
 	if( state.exemptions.find( exemption => exemption.UserId === userId ) ) {
-		return;
+		return
 	}
 
 	state.exemptions.push( { UserId: userId } )
@@ -59,8 +73,13 @@ function handleIsExempt(userId, state) {
 function handleIsNotExempt(userId, state) {
 	const user = state.exemptions.find( exemption => exemption.UserId === userId )
 	if( !user ) {
-		return;
+		return
 	}
 
 	state.exemptions.splice( state.exemptions.indexOf( user ), 1 )
+}
+
+function setIsSelected(user) {
+	user.isSelected = false
+	return user
 }

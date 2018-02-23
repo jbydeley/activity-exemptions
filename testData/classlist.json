@@ -1,1 +1,48 @@
-{"PagingInfo":{"Bookmark":"178","HasMoreItems":false},"Items":[{"Identifier":"175","ProfileIdentifier":"msLkJR2Xo1","DisplayName":"user, Fname","Username":null,"OrgDefinedId":"1","Email":"user1@d2l.com","FirstName":"Fname","LastName":"user"},{"Identifier":"178","ProfileIdentifier":"abweCUP8k2","DisplayName":"user2, Fname","Username":null,"OrgDefinedId":"2","Email":"","FirstName":"Fname","LastName":"user2"}]}
+{
+	"PagingInfo": {
+		"Bookmark":"178",
+		"HasMoreItems":false
+	},
+	"Items": [{
+		"Identifier":"175",
+		"ProfileIdentifier":"msLkJR2Xo1",
+		"DisplayName":"Baggins, Bilbo",
+		"Username":null,
+		"OrgDefinedId":"1",
+		"Email":"user1@d2l.com",
+		"FirstName":"Bilbo",
+		"LastName":"Baggins"
+	}, {
+		"Identifier":"178",
+		"ProfileIdentifier":"abweCUP8k2",
+		"DisplayName":"Gamgee, Samwise",
+		"Username":null,
+		"OrgDefinedId":"2",
+		"Email":"",
+		"FirstName":"Samwise",
+		"LastName":"Gamgee"
+	}, {
+		"Identifier":"179",
+		"ProfileIdentifier":"abweCUP8k2",
+		"DisplayName":"Took, Peregrin",
+		"Username":null,
+		"OrgDefinedId":"3",
+		"Email":"",
+		"LastName":"Took"
+	}, {
+		"Identifier":"180",
+		"ProfileIdentifier":"abweCUP8k2",
+		"DisplayName":"Brandybuck, Meriadoc",
+		"Username":null,
+		"OrgDefinedId":"4",
+		"Email":"",
+		"FirstName":"Meriadoc"
+	}, {
+		"Identifier":"181",
+		"ProfileIdentifier":"abweCUP8k2",
+		"DisplayName":"Gamgee, Hamfest",
+		"Username":null,
+		"OrgDefinedId":"5",
+		"Email":""
+	}]
+}
