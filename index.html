@@ -1,24 +1,40 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-	<head>
-		<meta charset="utf-8">
-		<title>activity-exemptions</title>
-		<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
-	</head>
-	<body>
 
-		<div id="app"></div>
-		<script src="/dist/activity-exemptions.js"></script>
-		<script type="text/javascript">
-			D2LManageExemptions.loadVue(
-				'app',
-				'/d2l/api/le/1.26/6613/classlist',
-				'/d2l/api/le/1.26/6613/activities/exemptions/',
-				'/d2l/api/le/1.26/6613/activities/exemptions',
-				'Token',
-				function(context, msg) { console.log("Toast: " + msg) },
-				function(context) { console.log('Exemption Count Updated') }
-				);
-		</script>
-	</body>
+<head>
+	<meta charset="utf-8">
+	<title>activity-exemptions</title>
+	<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+	<script src="/bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+	<link rel="import" href="/bower_components/polymer/polymer.html">
+	<link rel="import" href="/bower_components/d2l-button/d2l-button.html">
+	<link rel="import" href="/bower_components/d2l-checkbox/d2l-checkbox.html">
+	<link rel="import" href="/bower_components/d2l-table/d2l-table-wrapper.html">
+
+	<custom-style>
+		<style include="d2l-table-style"></style>
+	</custom-style>
+</head>
+
+<body>
+
+	<div id="app"></div>
+	<script src="/dist/activity-exemptions.js"></script>
+	<script type="text/javascript">
+		D2LManageExemptions.loadVue(
+			'app',
+			'/d2l/api/le/1.26/6613/classlist',
+			'/d2l/api/le/1.26/6613/activities/exemptions/',
+			'/d2l/api/le/1.26/6613/activities/exemptions',
+			'Token',
+			function (context, msg) {
+				console.log("Toast: " + msg)
+			},
+			function (context) {
+				console.log('Exemption Count Updated')
+			}
+		);
+	</script>
+</body>
+
 </html>

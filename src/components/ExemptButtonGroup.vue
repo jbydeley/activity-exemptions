@@ -4,21 +4,21 @@
 			v-if="showLoadMore"
 			:aria-label="$t('ariaLoadMore')"
 			:disabled="isLoading"
-			@click.native="loadMore">
+			@click="loadMore">
 			{{ $t('btnLoadMore') }}
 		</d2l-button>
 
 		<d2l-button primary
 			v-if="showExempt"
 			:aria-label="$t('ariaExempt')"
-			@click.native="setExempt">
+			@click="setExempt">
 			{{ $t('btnExempt') }}
 		</d2l-button>
 
 		<d2l-button
 			v-if="showExempt"
 			:aria-label="$t('ariaUnexempt')"
-			@click.native="setUnexempt">
+			@click="setUnexempt">
 			{{ $t('btnUnexempt') }}
 		</d2l-button>
 	</div>
@@ -26,14 +26,9 @@
 
 <script>
 import { mapActions } from 'vuex'
-import D2lButton from 'src/components/D2lButton.vue'
 
 export default {
 	name: 'ExemptButtonGroup',
-
-	components: {
-		D2lButton
-	},
 	methods: mapActions(['setExempt', 'setUnexempt', 'loadMore']),
 	props: {
 		showLoadMore: {
@@ -55,5 +50,6 @@ export default {
 <style scoped>
 .exempt-button-group {
 	display: inline-block;
+	margin-top: 10px;
 }
 </style>

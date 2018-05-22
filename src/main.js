@@ -7,6 +7,12 @@ import {createStore} from 'store/index'
 import * as types from 'store/mutation-types'
 import {i18n} from 'i18n'
 
+Vue.config.ignoredElements = [
+	'd2l-button',
+	'd2l-checkbox',
+	'd2l-table-wrapper'
+];
+
 function loadVue(
 	id,
 	classlistURL,
