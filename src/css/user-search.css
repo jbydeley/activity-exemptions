@@ -18,6 +18,12 @@
 	text-decoration: underline;
 }
 
+@media (max-width: 480px) {
+	.vui-input-search-container {
+		float: none !important;
+	}
+}
+
 .vui-input-search-container {
 	display: block;
 	float: right;
