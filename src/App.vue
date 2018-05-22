@@ -13,18 +13,20 @@
       </span>
     </div>
 
+  <d2l-table-wrapper>
     <table 
+      class="d2l-table"
       v-if="hasUsers"
       :summary="$t('ariaTableSummary')">
       <thead>
-        <tr>
-          <th>
-            <input
+        <tr class="d2l-table-row-first">
+          <th class="d2l-table-cell-first">
+            <d2l-checkbox
               :aria-label="$t('ariaSelectUnselectAll')"
               :checked="allSelected"
               type="checkbox"
-              class="d2l-checkbox"
               @change="selectAll">
+            </d2l-checkbox>
           </th>
           <!--
           To support both User Information Privacy and RTL, we need to conditionally
@@ -37,23 +39,33 @@
             <span v-if="!canSeeFirstName && !canSeeLastName">{{ $t('lblUser') }}</span>
           </th>
           <th v-if="canSeeOrgIdColumn">{{ $t('lblOrgDefinedId') }}</th>
-          <th>{{ $t('lblExemptStatus') }}</th>
+          <th class="d2l-table-cell-last">{{ $t('lblExemptStatus') }}</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in allUsers" :key="user.Identifier">
-          <td>
-            <input :aria-label="ariaSelectText(user)" type="checkbox" class="d2l-checkbox" :checked="user.isSelected" @change="toggleSelection(user)">
+        <tr
+          :class="{'d2l-table-row-last': index === allUsers.length - 1 }"
+          v-for="(user, index) in allUsers"
+          :key="user.Identifier">
+          <td  class="d2l-table-cell-first">
+            <d2l-checkbox
+              :aria-label="ariaSelectText(user)"
+              type="checkbox"
+              class="d2l-checkbox"
+              :checked="user.isSelected"
+              @change="toggleSelection(user)">
+            </d2l-checkbox>
           </td>
           <td>{{user.fullName}}</td>
           <td v-if="canSeeOrgIdColumn">{{user.OrgDefinedId}}</td>
-          <td>
+          <td class="d2l-table-cell-last">
             <span v-if="isUserExempt(user)">{{ $t('lblExempt') }}</span>
             <span v-else class="d2l-offscreen">{{ $t('lblNotExempt') }}</span>
           </td>
         </tr>
       </tbody>
     </table>
+  </d2l-table-wrapper>
 
     <exempt-button-group
       class="bottom-button-group"
