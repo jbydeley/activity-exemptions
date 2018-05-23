@@ -6,7 +6,8 @@ module.exports = function karmaConfig(config) {
     frameworks: ['jasmine'],
 
     files: [
-      { pattern: 'test/**/*_test.js', watched: true },
+        'node_modules/babel-polyfill/dist/polyfill.js',
+        { pattern: 'test/**/*_test.js', watched: true },
     ],
 
     preprocessors: {

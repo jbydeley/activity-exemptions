@@ -70,17 +70,17 @@ export const getters = {
 }
 
 function getFullName(user) {
-	 if( user.LastName && user.FirstName ) {
-		 return `${user.FirstName} ${user.LastName}`
-	 }
+	if( user.LastName && user.FirstName ) {
+		return `${user.FirstName} ${user.LastName}`
+	}
 
-	 if( user.LastName ) {
-		 return user.LastName
-	 }
+	if( user.LastName ) {
+		return user.LastName
+	}
 
-	 if( user.FirstName ) {
-		 return user.FirstName
-	 }
+	if( user.FirstName ) {
+		return user.FirstName
+	}	 
 
-	 return i18n.t('lblAnonymousUser')
+	return i18n.t('lblAnonymousUser')
 }

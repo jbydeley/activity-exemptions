@@ -30,7 +30,7 @@
           To support both User Information Privacy and RTL, we need to conditionally
           render one of four options. If the API changes in the future to support
           preferred names, this could be reduced or eliminated entirely.
-           -->
+          -->
           <th>
             <span v-if="canSeeFirstName">{{ $t('lblFirstName') }}</span>
             <span v-if="canSeeLastName">{{ $t('lblLastName') }}</span>
@@ -62,6 +62,7 @@
       :is-loading="isLoading" />
 
     <empty-message 
+      v-if="!isLoading"
       :query-term="queryTerm"
       :show-empty-search="showEmptySearch"
       :show-no-users="showNoUsers" />
